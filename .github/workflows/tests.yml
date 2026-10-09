@@ -11,9 +11,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Unit tests
+      - name: Python unit and integration tests
         run: python -m unittest discover -s tests -v
-      - name: Compile package
+      - name: Compile Python package
         run: python -m compileall -q thermo_iot
-      - name: CLI smoke
+      - name: C11 codec - warnings as errors
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror -pedantic \
+            -Ifirmware/include firmware/src/thermo_iot_frame.c \
+            firmware/tests/test_frame.c -o /tmp/thermo_iot_frame_tests
+          /tmp/thermo_iot_frame_tests
+      - name: Energy model smoke
         run: python -m thermo_iot --teg-mw 0.1
+      - name: TTN fixture smoke
+        run: |
+          python -m thermo_iot.gateway ingest --db /tmp/thermo-iot-smoke.sqlite --file examples/ttn_v3_uplink.json
+          python -m thermo_iot.gateway report --db /tmp/thermo-iot-smoke.sqlite --app district-heat --device pipe-1

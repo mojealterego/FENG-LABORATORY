@@ -1,0 +1,15 @@
+{
+  "end_device_ids": {
+    "device_id": "pipe-1",
+    "application_ids": {
+      "application_id": "district-heat"
+    }
+  },
+  "received_at": "2026-10-09T12:00:00Z",
+  "uplink_message": {
+    "session_key_id": "EXAMPLE-NOT-A-REAL-SESSION",
+    "f_cnt": 1,
+    "f_port": 10,
+    "frm_payload": "Af4QjApkAAI="
+  }
+}
