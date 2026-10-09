@@ -46,6 +46,43 @@ jobs:
           # Audit reports do not constitute release approval: all CAD defects
           # must be reviewed and corrected before fabrication.
           exit 0
+      - name: Prepare preliminary passive-carrier plots (NOT FOR FAB)
+        run: |
+          set -euo pipefail
+          mkdir -p cad-reports/passive-plots
+          kicad-cli pcb drc --severity-all --exit-code-violations \
+            -o cad-reports/passive-plots/drc.txt \
+            hardware/kicad/thermo_bench_carrier.kicad_pcb
+          kicad-cli pcb export gerbers \
+            --layers F.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts \
+            -o cad-reports/passive-plots/ \
+            hardware/kicad/thermo_bench_carrier.kicad_pcb
+          kicad-cli pcb export drill \
+            -o cad-reports/passive-plots/ \
+            hardware/kicad/thermo_bench_carrier.kicad_pcb
+          printf '%s\n' \
+            "PRELIMINARY EXPERIMENTAL ADAPTER ONLY" \
+            "NOT RELEASED FOR FABRICATION: symbol ERC, pinout, DFM and physical board bring-up pending." \
+            > cad-reports/passive-plots/NOT_FOR_FABRICATION.txt
+          test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.gbr' -print -quit)"
+          test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.drl' -print -quit)"
+      - name: Surface CAD readiness in GitHub job summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Thermo-IoT: EDA validation status"
+            echo "These files are CAD candidates, not hardware verified."
+            echo ""
+            for report in cad-reports/*-status.txt; do
+              if [ -f "$report" ]; then
+                echo "- $(basename "$report"): $(cat "$report")"
+              fi
+            done
+            echo ""
+            echo "KiCad error/warning status and unconnected items are retained in the artifact."
+            echo "A green diagnostic job does not waive ERC/DRC violations or authorize manufacturing."
+          } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
