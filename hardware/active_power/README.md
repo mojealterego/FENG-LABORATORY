@@ -2,7 +2,7 @@
 
 ## Important status
 
-This folder contains **native KiCad schematic/net-assigned PCB for an LTC3108 active power breakout**, not a finalized complete industrial IoT device. The PCB has placed parts, assigned nets, and **two explicitly routed charge-pump connections** (C1.2→U1.13, C2.2→U1.14); the remainder is still UNROUTED. It has NOT passed a real KiCad ERC/DRC, mechanical clearance checks, assembly inspection, or hot/cold-start testing. **Do NOT send to PCB fabrication as is.**
+This folder contains **native KiCad schematic/net-assigned PCB for an LTC3108 active power breakout**, not a finalized complete industrial IoT device. The PCB has placed parts, assigned nets, and **two explicitly routed charge-pump connections** (C1.2→U1.13, C2.2→U1.14); the remainder is still UNROUTED. Real KiCad 10 automated ERC/DRC has been RUN, but **blocking warnings and unconnected copper remain**; there is no passed manufacturing signoff, mechanical clearance/assembly validation, or hot/cold-start test. **Do NOT send to PCB fabrication as is.**
 
 The design uses the **LTC3108EGN** 16-pin SSOP package and an **external transformer** for ease of bench swapping. Pin numbering matches the manufacturer GN16 top-view drawing (Rev D). Manufacturer typical application: https://www.analog.com/media/en/technical-documentation/data-sheets/3108fc.pdf.
 
@@ -53,3 +53,9 @@ The local `ThermoActive.pretty/` directory and `fp-lib-table` resolve the custom
 The **manufacturer-reference** capacitor-to-LTC3108 nets `PMIC_C1` and `PMIC_C2` have now been laid on F.Cu at 0.20 mm nominal width. The real KiCad 10.0.6 DRC diagnostics [37960523837](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37960523837) report **28 unconnected pads remaining**, down from 30, and **13 existing footprint-library mismatch warnings**. There were no new inter-track violations reported for the two routed nets. These are preliminary reference-board traces, **not an undisclosed novel circuit**. Transformer pin order, capacitor land-patterns, ESR, clearance, and all other wiring remain HOLD; the board shall not be manufactured or attached to live heating infrastructure without independent electrical/DFM validation.
 
 `hardware/cad_gate.py` interprets KiCad textual DRC to machine-readable `HOLD` / `ENGINEERING_REVIEW_REQUIRED`. Even a hypothetical zero-violation DRC result never sets `fabrication_authorized` to true — a human review is mandatory.
+
+## Explicit RF supply brownout blocker (electrical engineering HOLD)
+
+The open C6 = **470 µF at VOUT 3.3 V** is not sufficient as the sole storage capacitor for the **illustrative** 87 mA / 200 ms STM32WLE transmit pulse even under the optimistic constant LTC3108 VOUT current assumption. A charge/ESR first-order model suggests at least **13.1 mF** for the specified illustrative pulse and minimum voltage, before derating and protection margins. This number is **NOT** a production capacitor selection or a validated performance value. VSTORE (nominally around 5 V) must never be directly connected to STM32WLE VDD. Independent current transient measurement and a suitable qualified power architecture remain prerequisites.
+
+See [reproducible power-integrity analysis](../../docs/RF_POWER_BROWNOUT_HOLD.md) and `python -m thermo_iot.harvester_rail`. Engineering status remains **HOLD** even if routing progress reduces unconnected pads.

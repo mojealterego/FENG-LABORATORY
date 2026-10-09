@@ -129,6 +129,10 @@ python -m thermo_iot.mvp_acceptance --root private/mvp-evidence
 
 Wymaga **wcześniej faktycznie wykonanych pomiarów i zdarzeń**; nie generuje fałszywych danych. [Procedura i kryteria](docs/MVP_EVIDENCE_PRIVATE.md). Ścieżka `private/` jest ignorowana przez Git i blokowana przez lokalne hooki przed publikacją.
 
+## Krytyczny warunek zasilania impulsowego LoRaWAN
+
+W publicznym projekcie LTC3108 zamontowany kondensator C6 = **470 µF** stanowi **elektryczny NO-GO** dla przyjętego profilu 87 mA przez 200 ms, nawet z optymistycznym 4,5 mA wsparciem PMIC. Referencyjne wyliczenie pierwszego rzędu wskazuje minimum ~**13,1 mF** bez zapasu temperaturowego/tolerancji. Zasilenie STM32 bezpośrednio z VSTORE ~5,25 V jest niedopuszczalne. [Szczegółowa analiza](docs/RF_POWER_BROWNOUT_HOLD.md). To wynik symulacji, nie pomiar. Aktywna PCB i fizyczne MVP pozostają **HOLD**.
+
 ## Warunki przed zgłoszeniem
 
 Wymagane są potwierdzone dane pomysłodawców, właścicieli praw IP, zasoby, kompetencje, oświadczenia formalne i oryginalny formularz operatora. Kod i wyniki symulacji nie mogą zastępować protokołów zbudowania i walidacji urządzenia.
