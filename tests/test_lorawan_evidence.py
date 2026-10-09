@@ -40,7 +40,7 @@ class FieldEvidenceTests(unittest.TestCase):
             self.assertEqual(json.loads(path.read_text())["application_id"],"thermo-lab")
             with self.assertRaises(FileExistsError):
                 record_rf_attempt(
-                    path,modem_result={},payload=sample,application_id="thermo-lab",
+                    path,modem_result={"network_delivery":"unverified","probe_state":"radio_command_completed"},payload=sample,application_id="thermo-lab",
                     device_id="pipe-1",start_utc=ts,end_utc=ts+timedelta(seconds=20))
 
     def _make_files(self,folder,*,received_at,challenge=24,actual_challenge=24,fcnt=8):
@@ -75,9 +75,11 @@ class FieldEvidenceTests(unittest.TestCase):
             with self.assertRaises(FieldTestError):
                 verify_recorded_attempt(a,b)
             b.write_text(b.read_text().replace("13:01:15","14:01:15"))
+            mismatch_dir=Path(folder)/"mismatch"
+            mismatch_dir.mkdir()
+            a2,b2=self._make_files(mismatch_dir,received_at="2026-10-09T14:01:15Z",
+                                  challenge=24,actual_challenge=25)
             with self.assertRaises(FieldTestError):
-                a2,b2=self._make_files(folder,received_at="2026-10-09T14:01:15Z",
-                                      challenge=24,actual_challenge=25)
                 verify_recorded_attempt(a2,b2)
 
     def test_unrelated_original_report_rejected(self):
