@@ -87,3 +87,11 @@ Ta walidacja **zamyka problem kompilowalności obrazu RF** dla konkretnego targe
 W prywatnym walidatorze `mvp_acceptance` nie wystarczają już dwa końcowe rekordy reprezentujące siedem dni. Wymagane są próbki w interwale **nie większym niż 1 godzina**, łącznie co najmniej **169 obserwacji** i przedział pomiarowy nie krótszy niż 604 800 sekund. Obowiązuje wciąż konieczność niezależnego potwierdzenia autentyczności aparatury i braku przerw w zasilaniu.
 
 Dla logów The Things Stack v3 `rf_audit` raportuje nieciągłości FCnt, ponowienia, liczbę sesji, RSSI/SNR oraz udział referencyjnych ramek testowych. **Nie utożsamia brakujących FCnt z rzeczywistym wskaźnikiem strat**, bo nie ma dziennika wszystkich nadanych ramek. Żaden z tych modułów nie zastępuje faktycznej radiowej próby z fizycznym układem.
+
+## Aktualizacja CAD A0 — 9 października 2026, faza trasowania
+
+Na **publicznym, uprzednio ujawnionym układzie referencyjnym LTC3108** poprowadzono dwa niesekretne połączenia kondensatorów pompy ładunkowej na warstwie F.Cu. W rzeczywistym audycie KiCad 10.0.6 pozostało **28** niepołączonych pozycji (wcześniej **30**) oraz **13** ostrzeżeń `lib_footprint_mismatch`. Dla nowych odcinków DRC nie wykazał zwarć ani kolizji ścieżek. [Dowód GitHub Actions](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37960523837).
+
+Stan produkcyjny: **HOLD / NOT FOR FABRICATION**. Zmniejszenie liczby niepołączonych nets nie oznacza, że układ będzie prawidłowo działał elektrycznie; dane producentów, dobór elementów, połączenia masy i weryfikacja fizyczna nadal nie zostały zamknięte. Dla nowych unikatowych rozwiązań utrzymywana jest [bariera poufności IP](IP_PROTECTION_PL.md), a publiczna praca dotyczy wyłącznie ogólnie znanych elementów projektu referencyjnego.
+
+Wprowadzono automatyczny `hardware/cad_gate.py` z walidacją raportu DRC: każdy niepodłączony pad lub ostrzeżenie DRC wymusza status `HOLD`; zero naruszeń daje jedynie `ENGINEERING_REVIEW_REQUIRED`, nigdy samodzielne pozwolenie na produkcję.

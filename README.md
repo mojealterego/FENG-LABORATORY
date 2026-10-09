@@ -91,7 +91,7 @@ COM3 jest tylko przykładem Windows i musi zostać zastąpiony faktycznym portem
 
 **Nowe elementy przeznaczone do rzeczywistej budowy demonstratora:**
 
-- [LTC3108GN16 — schemat aktywnego PMIC i projekt PCB w KiCad](hardware/active_power/) — PCB **jeszcze bez poprowadzonych ścieżek**, do przeglądu ERC/DRC; transformator 1:100 poza płytką.
+- [LTC3108GN16 — schemat aktywnego PMIC i projekt PCB w KiCad](hardware/active_power/) — PCB **częściowo trasowana: 2 nets połączone, 28 pozycji nadal niepołączonych**, status produkcyjny HOLD; transformator 1:100 poza płytką.
 - [Natywny overlay STM32CubeIDE dla STM32WLE5JC / Wio-E5](firmware/stm32wle5jc/README.md) — generator 4 plików integrowanych z oficjalnym Seeed LoRaWAN End Node; **zbudowano ELF/HEX dla profilu laboratoryjnego; brak flash urządzenia**.
 - [Pobieranie rzeczywistych parametrów PMIC z pięciu przyrządów SCPI](thermo_iot/pmic.py) — wejście, wyjście, VSTORE, próba cold-start (wymaga własnej aparatury).
 - [Próba radiowa Wio-E5 EU868 i weryfikacja odczytu TTN](thermo_iot/lorawan_fieldtest.py) — program istnieje, **brak rzeczywistego raportu odbioru**.
