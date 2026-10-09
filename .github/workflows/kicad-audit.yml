@@ -1,0 +1,50 @@
+name: KiCad EDA audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hardware/**"
+      - ".github/workflows/kicad-audit.yml"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install open-source KiCad CLI
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends kicad
+          kicad-cli version
+      - name: Inspect schematic export and ERC for all projects
+        shell: bash
+        run: |
+          mkdir -p cad-reports
+          set +e
+          for project in hardware/kicad/thermo_bench_carrier hardware/active_power/ltc3108_power_breakout; do
+            label="$(basename "$project")"
+            echo "::group::Schematic audit $label"
+            kicad-cli sch export netlist -o "cad-reports/${label}.net" "${project}.kicad_sch"
+            echo "netlist command result: $?" | tee "cad-reports/${label}-netlist-status.txt"
+            kicad-cli sch erc --severity-all --exit-code-violations -o "cad-reports/${label}-erc.txt" "${project}.kicad_sch"
+            echo "erc command result: $?" | tee "cad-reports/${label}-erc-status.txt"
+            echo "::endgroup::"
+          done
+          for project in hardware/kicad/thermo_bench_carrier hardware/active_power/ltc3108_power_breakout; do
+            label="$(basename "$project")"
+            echo "::group::PCB audit $label"
+            kicad-cli pcb drc --severity-all --exit-code-violations -o "cad-reports/${label}-drc.txt" "${project}.kicad_pcb"
+            echo "drc command result: $?" | tee "cad-reports/${label}-drc-status.txt"
+            echo "::endgroup::"
+          done
+          # Audit reports do not constitute release approval: all CAD defects
+          # must be reviewed and corrected before fabrication.
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kicad-audit-diagnostics
+          path: cad-reports/
+          if-no-files-found: warn
