@@ -96,6 +96,7 @@ class LabSweepTests(unittest.TestCase):
             read_sweeps(self.file)
 
     def test_rejects_unbounded_csv_file(self):
+        self.write()
         with self.assertRaises(LabValidationError):
             read_sweeps(self.file, max_bytes=1)
 
