@@ -21,6 +21,16 @@ jobs:
             -Ifirmware/include firmware/src/thermo_iot_frame.c \
             firmware/tests/test_frame.c -o /tmp/thermo_iot_frame_tests
           /tmp/thermo_iot_frame_tests
+      - name: Cross-compile freestanding Cortex-M4 application objects
+        run: |
+          mkdir -p /tmp/thermo-iot-arm
+          for source in firmware/src/thermo_iot_frame.c firmware/src/thermo_iot_power_policy.c firmware/src/thermo_iot_app.c; do
+            name="$(basename "$source" .c)"
+            clang --target=arm-none-eabi -mcpu=cortex-m4 -mthumb -std=c11 -ffreestanding \
+              -Wall -Wextra -Werror -pedantic -Ifirmware/include -c "$source" \
+              -o "/tmp/thermo-iot-arm/${name}.o"
+            file "/tmp/thermo-iot-arm/${name}.o"
+          done
       - name: C11 STM32WLE5 application host tests
         run: |
           cc -std=c11 -Wall -Wextra -Werror -pedantic -Ifirmware/include \
