@@ -92,6 +92,37 @@ class IpGuardTests(unittest.TestCase):
             self.assertTrue(any("private/claims.md" in f for f in findings))
             self.assertEqual(scan_git_range(repo,tip,tip),[])
 
+    def test_merge_only_sensitive_resolution_is_not_missed(self):
+        # The sensitive marker exists ONLY in merge conflict resolution,
+        # not in either parent branch. The hook must inspect merge commits.
+        with tempfile.TemporaryDirectory() as folder:
+            repo=Path(folder)
+            git(repo,"init")
+            git(repo,"config","user.email","test@example.test")
+            git(repo,"config","user.name","Test")
+            (repo/"README.md").write_text("public\\n")
+            git(repo,"add",".")
+            git(repo,"commit","-m","safe base")
+            baseline=git(repo,"rev-parse","HEAD")
+            branch=git(repo,"symbolic-ref","--short","HEAD")
+            git(repo,"checkout","-b","other")
+            (repo/"README.md").write_text("feature\\n")
+            git(repo,"add",".")
+            git(repo,"commit","-m","other branch")
+            git(repo,"checkout",branch)
+            (repo/"README.md").write_text("main\\n")
+            git(repo,"add",".")
+            git(repo,"commit","-m","main branch")
+            subprocess.run(["git","merge","--no-ff","other"],cwd=repo,
+                           stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+                           text=True,check=False)
+            (repo/"README.md").write_text("UNFILED_" + "INVENTION\\n")
+            git(repo,"add",".")
+            git(repo,"commit","-m","merged resolution")
+            tip=git(repo,"rev-parse","HEAD")
+            findings=scan_git_range(repo,baseline,tip)
+            self.assertTrue(findings,"Sensitive merge-only changes evaded pre-push review")
+
     def test_new_branch_upload_checks_entire_unpublished_history(self):
         with tempfile.TemporaryDirectory() as folder:
             repo=Path(folder)
