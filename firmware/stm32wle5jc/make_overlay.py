@@ -74,8 +74,8 @@ def rewrite_app(source: str) -> str:
 
 def rewrite_header(source: str) -> str:
     for pattern, replacement in (
-        (r"(?m)^(#define APP_TX_DUTYCYCLE\s+)\d+\s*$", r"\g<1>600000"),
-        (r"(?m)^(#define LORAWAN_USER_APP_PORT\s+)\d+\s*$", r"\g<1>10"),
+        (r"(?m)^(#define APP_TX_DUTYCYCLE[ \t]+)\d+[ \t]*$", r"\g<1>600000"),
+        (r"(?m)^(#define LORAWAN_USER_APP_PORT[ \t]+)\d+[ \t]*$", r"\g<1>10"),
     ):
         source, changed = re.subn(pattern, replacement, source)
         if changed != 1:
