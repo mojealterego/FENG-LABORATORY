@@ -32,7 +32,7 @@ class CubeGccBuildTests(unittest.TestCase):
     def test_rejects_repo_escape_source(self):
         with tempfile.TemporaryDirectory() as tmp:
             ide=Path(tmp)/"seeed/Projects/Applications/LoRaWAN/LoRaWAN_End_Node/STM32CubeIDE"
-            ide.mkdir()
+            ide.mkdir(parents=True)
             (ide/".project").write_text(
                 "<projectDescription><linkedResources><link><name>escape.c</name>"
                 "<locationURI>PARENT-1-PROJECT_LOC/../../escape.c</locationURI>"
