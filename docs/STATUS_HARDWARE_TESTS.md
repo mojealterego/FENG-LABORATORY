@@ -48,3 +48,19 @@ Ostrzeżenia ERC dotyczą głównie niewłączonych do konfiguracji bibliotek i 
 [Zarchiwizowany pierwszy audyt KiCad 10](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37952674687)
 
 Automatycznie wygenerowane Gerbery/Excellon dla **pasywnej płytki laboratoryjnej** są artefaktami do przeglądu, wyraźnie oznaczonymi `NOT_FOR_FABRICATION`. Ich wygenerowanie nie jest dowodem wyprodukowania ani uruchomienia fizycznej płytki.
+
+
+### Wynik kolejnego przebiegu CAD po korekcie siatki
+
+Po wyrównaniu 13 symboli (w tym 16 pinów LTC3108) i końców przewodów do siatki 1,27 mm:
+
+- aktywny harvester: **ostrzeżenia ERC zmniejszone z 82 do 27**, **0 błędów ERC**;
+- pozostałe 27 ostrzeżeń to **13 ostrzeżeń biblioteki symboli, 13 ostrzeżeń biblioteki footprintów i 1 świadomie nieobsadzone wyjście VOUT2**;
+- pasywny adapter: nadal **0 naruszeń DRC, 0 niepodłączonych padów**;
+- aktywna PCB: nadal **30 brakujących połączeń miedzianych**; 13 ostrzeżeń dopasowania footprintów — nadal NO-GO do fabrykacji;
+- dla obu schematów rzeczywisty eksport netlisty XML przeszedł audyt wszystkich spodziewanych pinów i ich sieci;
+- wygenerowano siedem warstw Gerber oraz plik wierceń **wyłącznie pasywnej płytki do przeglądu, nie do produkcji**.
+
+[GitHub Actions: audyt KiCad po korekcie siatki](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37954140570).
+
+**Ważne:** zielony przebieg oznacza powodzenie diagnostyki i kontraktów połączeń, a nie pomyślny DRC aktywnego projektu. Raport ten jawnie nadal pokazuje 30 niepołączonych ścieżek.
