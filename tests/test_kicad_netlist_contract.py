@@ -57,6 +57,13 @@ class NativeNetlistContractTests(unittest.TestCase):
         with self.assertRaises(NetlistMismatch):
             verify_contract(invalid,CARRIER)
 
+    def test_root_local_label_slash_is_normalized(self):
+        with tempfile.TemporaryDirectory() as root:
+            file=Path(root)/"native.xml"
+            file.write_text('<export><nets><net code="1" name="/GND">'
+                            '<node ref="J1" pin="2"/></net></nets></export>')
+            self.assertEqual(parse_nodes(file)[("J1","2")],"GND")
+
     def test_corrupt_empty_xml_must_fail(self):
         with tempfile.TemporaryDirectory() as root:
             file=Path(root)/"invalid.xml"

@@ -57,6 +57,11 @@ def parse_nodes(xml_file: str|Path) -> dict[tuple[str,str],str]:
         name=net.get("name")
         if not name:
             raise NetlistMismatch("A net has no name")
+        # KiCad XML qualifies local labels on the root schematic with '/'.
+        # These single-sheet projects have no child sheets. Keep deeper
+        # hierarchical paths (if ever introduced) explicit and different.
+        if name.startswith("/") and name.count("/") == 1:
+            name=name[1:]
         for node in net.findall("node"):
             reference,pin=node.get("ref"),node.get("pin")
             if not reference or not pin:
