@@ -27,6 +27,10 @@ jobs:
             -Ifirmware/include firmware/src/thermo_iot_power_policy.c \
             firmware/tests/test_power_policy.c -o /tmp/thermo_iot_power_policy_tests
           /tmp/thermo_iot_power_policy_tests
+      - name: Check dashboard JavaScript syntax
+        run: node --check thermo_iot/static/app.js
+      - name: Populate local demonstration database
+        run: python -m thermo_iot.demo --db /tmp/thermo-iot-synthetic-ci.sqlite --count 36
       - name: Energy model smoke
         run: python -m thermo_iot --teg-mw 0.1
       - name: TTN fixture smoke

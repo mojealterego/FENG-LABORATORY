@@ -21,3 +21,14 @@ Lokalne punkty GET:
 Serwer HTTP akceptuje tylko interfejs `localhost`, operacje zapisu są wyłączone, SQLite otwiera się w trybie `mode=ro`, API stosuje walidację parametrów i zapytania SQL z parametrami, strona ma restrykcyjne CSP oraz `Cache-Control: no-store`.
 
 **Ograniczenia:** brak logowania, TLS, uprawnień operatorów, skalowania, alarmów certyfikowanych i integracji sterowania OT. Nie należy przekierowywać tego serwera do Internetu. Dane z przykładowego JSON są fikcyjne i nie odzwierciedlają warunków pracy w sieci ciepłowniczej.
+
+## Wypełnienie demonstratora danymi syntetycznymi
+
+Jeśli urządzenie fizyczne nie zostało jeszcze zbudowane, można uruchomić niezależną symulację zdarzeń (jedna sztuczna anomalia i zmieniające się napięcie bufora):
+
+```bash
+python -m thermo_iot.demo --db ./thermo-demo-synthetic.sqlite --count 144
+python -m thermo_iot.dashboard --db ./thermo-demo-synthetic.sqlite
+```
+
+Nazwa aplikacji `thermo-iot-demo`, urządzenie `synthetic-pipe-01`, etykieta raportu `synthetic`, a także blokada zapisu do istniejącej bazy służą odróżnieniu danych próbnych od rzeczywistych. Sam wygląd dashboardu nie dowodzi działania hardware.

@@ -30,6 +30,15 @@ cc -std=c11 -Wall -Wextra -Werror -pedantic -Ifirmware/include firmware/src/ther
 
 **Uwaga:** w plikach przykładowych występują wyłącznie **syntetyczne** dane przeznaczone do demonstracji formatu. Lokalny webhook wymaga tokenu i nie jest wystawiany domyślnie poza localhost. Zob. [protokół IoT](docs/PROTOKOL_IOT.md).
 
+## Demonstrator panelu telemetrii (lokalnie)
+
+```bash
+python -m thermo_iot.demo --db ./thermo-synthetic-demo.sqlite --count 144
+python -m thermo_iot.dashboard --db ./thermo-synthetic-demo.sqlite --port 8766
+```
+
+Otwórz `http://127.0.0.1:8766/` na komputerze, na którym działa Python. Dane są **wygenerowane syntetycznie** i zapisywane wyłącznie do nowo utworzonej bazy; skrypt odmawia nadpisania istniejącej bazy. Panel nie pozwala na sterowanie instalacją ani jej urządzeniami. [Opis dashboardu](docs/DASHBOARD.md).
+
 ## Baza dokumentacji
 
 - [Karta robocza do wniosku IPB](docs/WNIOSEK_THERMO_IOT.md)
