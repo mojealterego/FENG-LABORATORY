@@ -1,0 +1,54 @@
+name: STM32 Wio-E5 vendor compatibility
+on:
+  push:
+    branches: [main]
+    paths:
+      - "firmware/**"
+      - "tests/test_cubeide_overlay.py"
+      - ".github/workflows/stm32-vendor-contract.yml"
+  workflow_dispatch:
+jobs:
+  vendor-overlay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Obtain exact public Seeed Wio-E5 reference source revision
+        run: |
+          mkdir -p /tmp/thermo-see
+          git -C /tmp/thermo-see init -q
+          git -C /tmp/thermo-see remote add origin https://github.com/Seeed-Studio/LoRaWan-E5-Node.git
+          git -C /tmp/thermo-see fetch --depth 1 origin 163c05379b1805dd8f2c061d4557a69985acc953
+          git -C /tmp/thermo-see checkout --detach --quiet FETCH_HEAD
+          test "$(git -C /tmp/thermo-see rev-parse HEAD)" = 163c05379b1805dd8f2c061d4557a69985acc953
+      - name: Build deterministic native CubeIDE application overlay
+        run: |
+          python -m firmware.stm32wle5jc.make_overlay \
+            --vendor-root /tmp/thermo-see \
+            --output-dir /tmp/thermo-wio-staged
+          test -s /tmp/thermo-wio-staged/lora_app.c
+          test -s /tmp/thermo-wio-staged/lora_app.h
+          test -s /tmp/thermo-wio-staged/thermo_iot_frame.c
+          test -s /tmp/thermo-wio-staged/thermo_iot_frame.h
+          grep -q 'APP_TX_DUTYCYCLE.*600000' /tmp/thermo-wio-staged/lora_app.h
+          grep -q 'LORAWAN_USER_APP_PORT.*10' /tmp/thermo-wio-staged/lora_app.h
+          grep -q 'thermo_iot_encode_frame' /tmp/thermo-wio-staged/lora_app.c
+          # The included C11 frame encoder itself must compile for Cortex-M4.
+          clang --target=arm-none-eabi -mcpu=cortex-m4 -mthumb \
+            -std=c11 -ffreestanding -Wall -Wextra -Werror \
+            -I/tmp/thermo-wio-staged \
+            -c /tmp/thermo-wio-staged/thermo_iot_frame.c \
+            -o /tmp/thermo-wio-frame.o
+      - name: Publish overlay contract (not a linked flashable firmware)
+        run: |
+          {
+            echo "## STM32 Wio-E5 firmware integration"
+            echo "Pinned Seeed project: 163c05379b1805dd8f2c061d4557a69985acc953"
+            echo "Vendor source patched into staged CubeIDE application: yes"
+            echo "Cortex-M4 freestanding radio frame compilation: yes"
+            echo "Linked STM32CubeIDE .elf / .hex: **not performed**"
+            echo "MCU hardware flash / real TTN RF receipt: **not performed**"
+          } >> "$GITHUB_STEP_SUMMARY"
