@@ -1,7 +1,6 @@
 #include "thermo_iot_power_policy.h"
 #include <limits.h>
 #include <stddef.h>
-#include <string.h>
 
 bool thermo_iot_power_init(
     thermo_iot_power_state *state, const thermo_iot_power_config *config
@@ -17,7 +16,7 @@ bool thermo_iot_power_init(
         || config->energy_margin_percent > 1000u) {
         return false;
     }
-    memset(state, 0, sizeof(*state));
+    *state = (thermo_iot_power_state){0};
     state->config = *config;
     return true;
 }
