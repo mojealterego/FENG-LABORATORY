@@ -64,7 +64,9 @@ jobs:
             "PRELIMINARY EXPERIMENTAL ADAPTER ONLY" \
             "NOT RELEASED FOR FABRICATION: symbol ERC, pinout, DFM and physical board bring-up pending." \
             > cad-reports/passive-plots/NOT_FOR_FABRICATION.txt
-          test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.gbr' -print -quit)"
+          test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.gtl' -print -quit)"
+          test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.gbl' -print -quit)"
+          test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.gm1' -print -quit)"
           test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.drl' -print -quit)"
       - name: Surface CAD readiness in GitHub job summary
         if: always()
