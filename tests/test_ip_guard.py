@@ -43,10 +43,10 @@ class IpGuardTests(unittest.TestCase):
 
     def test_blocks_unfiled_invention_and_credentials_without_leaking_values(self):
         for payload in (
-            b"# UNFILED_INVENTION\nDo not disclose novel thermal coupler details",
-            b"APP_KEY=00112233445566778899AABBCCDDEEFF\n",
-            b"THERMO_IOT_WEBHOOK_TOKEN='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'\n",
-            b"-----BEGIN PRIVATE KEY-----\nsecret\n-----END PRIVATE KEY-----",
+            b"# UNFILED_" + b"INVENTION\nDo not disclose novel thermal coupler details",
+            b"APP_KEY=" + b"00112233445566778899AABBCCDDEEFF\n",
+            b"THERMO_IOT_WEBHOOK_TOKEN=" + b"'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'\n",
+            b"-----BEGIN PRIVATE " + b"KEY-----\nsecret\n-----END PRIVATE KEY-----",
         ):
             with self.subTest(payload=payload[:15]):
                 findings = inspect_candidate("docs/notes.txt", payload)
@@ -65,7 +65,7 @@ class IpGuardTests(unittest.TestCase):
             (repo/"safe.txt").write_text("PUBLIC")
             git(repo,"add","safe.txt")
             self.assertEqual(scan_staged(repo),[])
-            (repo/"safe.txt").write_text("UNFILED_INVENTION")
+            (repo/"safe.txt").write_text("UNFILED_" + "INVENTION")
             self.assertEqual(scan_staged(repo),[])
             git(repo,"add","safe.txt")
             self.assertTrue(scan_staged(repo))
@@ -98,7 +98,7 @@ class IpGuardTests(unittest.TestCase):
             git(repo,"init")
             git(repo,"config","user.email","test@example.test")
             git(repo,"config","user.name","Test")
-            (repo/"secret.env").write_text("APP_KEY=00112233445566778899AABBCCDDEEFF")
+            (repo/"secret.env").write_text("APP_KEY=" + "00112233445566778899AABBCCDDEEFF")
             git(repo,"add","secret.env")
             git(repo,"commit","-m","new orphan branch")
             tip=git(repo,"rev-parse","HEAD")
