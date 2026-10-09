@@ -32,6 +32,9 @@ cc -std=c11 -Wall -Wextra -Werror -pedantic -Ifirmware/include firmware/src/ther
 /tmp/thermo-iot-frame-tests
 ```
 
+
+**Ostrzeżenie: przyklad --cycle-mj 21.9 nie jest zweryfikowaną energią cyklu LoRaWAN.** Wyłącznie ilustracyjny impuls 87 mA x 200 ms przy 3,3 V pobiera ponad 57 mJ przed oknami RX i stratami. PCB ma tylko C6=470 uF na VOUT, co stanowi elektryczny HOLD/NO-GO dla referencyjnego profilu. Symulowane 2,5 F nie istnieje na tej szynie, a VSTORE 5,25 V nie wolno podłączać bezpośrednio do STM32WLE. Analizy: [power_gate](thermo_iot/power_gate.py), [harvester_rail](thermo_iot/harvester_rail.py) i [protokół](docs/RF_POWER_BROWNOUT_HOLD.md). Nie są to pomiary fizyczne.
+
 **Uwaga:** w plikach przykładowych występują wyłącznie **syntetyczne** dane przeznaczone do demonstracji formatu. Lokalny webhook wymaga tokenu i nie jest wystawiany domyślnie poza localhost. Zob. [protokół IoT](docs/PROTOKOL_IOT.md).
 
 ## Demonstrator panelu telemetrii (lokalnie)

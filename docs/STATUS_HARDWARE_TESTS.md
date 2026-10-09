@@ -95,3 +95,9 @@ Na **publicznym, uprzednio ujawnionym układzie referencyjnym LTC3108** poprowad
 Stan produkcyjny: **HOLD / NOT FOR FABRICATION**. Zmniejszenie liczby niepołączonych nets nie oznacza, że układ będzie prawidłowo działał elektrycznie; dane producentów, dobór elementów, połączenia masy i weryfikacja fizyczna nadal nie zostały zamknięte. Dla nowych unikatowych rozwiązań utrzymywana jest [bariera poufności IP](IP_PROTECTION_PL.md), a publiczna praca dotyczy wyłącznie ogólnie znanych elementów projektu referencyjnego.
 
 Wprowadzono automatyczny `hardware/cad_gate.py` z walidacją raportu DRC: każdy niepodłączony pad lub ostrzeżenie DRC wymusza status `HOLD`; zero naruszeń daje jedynie `ENGINEERING_REVIEW_REQUIRED`, nigdy samodzielne pozwolenie na produkcję.
+
+## Kontrola CAD po trasowaniu wejścia TEG, zasilania i uzwojenia wtórnego (9.10.2026)
+
+Ostatni kompletny wynik KiCad 10.0.6: [GitHub Actions 37980536223](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37980536223). Na publicznym, referencyjnym układzie LTC3108 poprowadzono kolejne połączenia TEG, mas, VOUT/VSTORE i toru pompy ładunkowej. **Liczba niepołączonych pozycji spadła z 28 do 18 (wcześniej 30)**. Nadal występuje **13 ostrzeżeń dopasowania lokalnych footprintów**. DRC nie wskazał dodatkowych kolizji nowych ścieżek, lecz nie stanowi to zatwierdzenia projektu.
+
+**Status: HOLD / NOT FOR FABRICATION** z dwóch niezależnych powodów: niekompletny routing/niezatwierdzone footprinty oraz udokumentowany modelowy brownout VOUT z 470 uF dla impulsu RF 87 mA. Zagadnienia magazynowania energii na bezpiecznej szynie MCU i pomiary prądowe wymagają niezależnej oceny. Nie publikować nowych potencjalnie wynalazczych rozwiązań układowych przed konsultacją IP. © 2026 Mojeaterego — Andrzej Mikulski. Wszelkie prawa zastrzeżone.

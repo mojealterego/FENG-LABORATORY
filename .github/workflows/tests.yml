@@ -49,6 +49,25 @@ jobs:
         run: python -m thermo_iot.demo --db /tmp/thermo-iot-synthetic-ci.sqlite --count 36
       - name: KiCad source consistency smoke
         run: python -m unittest discover -s tests -p "test_kicad_source.py" -v
+      - name: Reference RF supply MUST remain engineering HOLD
+        run: |
+          python -m thermo_iot.power_gate > /tmp/thermo-iot-power-hold.json
+          python - <<'PY'
+          import json
+          from thermo_iot.harvester_rail import RailAssumptions, evaluate_hold_up
+          from thermo_iot.power_gate import screen_reference_power, candidate_supply
+          conservative=screen_reference_power(candidate_supply())
+          optimistic=evaluate_hold_up(RailAssumptions(
+              output_capacitance_f=470e-6,pmic_current_a=0.0045,
+              cap_esr_ohm=0.15))
+          with open('/tmp/thermo-iot-power-hold.json') as src:
+              report=json.load(src)
+          assert report['decision']=='HOLD' and not report['deployment_authorized']
+          assert conservative['decision']=='HOLD'
+          assert optimistic['status']=='NO_GO'
+          assert not optimistic['physical_validation_performed']
+          print('RF SUPPLY HOLD confirmed by independent candidate equations; NO real hardware qualification')
+          PY
       - name: Energy model smoke
         run: python -m thermo_iot --teg-mw 0.1
       - name: TTN fixture smoke
