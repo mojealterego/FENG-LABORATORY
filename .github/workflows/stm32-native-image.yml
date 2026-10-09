@@ -1,0 +1,61 @@
+name: Native STM32WLE5JC firmware image
+on:
+  push:
+    branches: [main]
+    paths:
+      - "firmware/stm32wle5jc/**"
+      - ".github/workflows/stm32-native-image.yml"
+  workflow_dispatch:
+jobs:
+  gcc-arm-link:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install GNU Arm Embedded cross compiler and newlib
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            gcc-arm-none-eabi binutils-arm-none-eabi libnewlib-arm-none-eabi
+          arm-none-eabi-gcc --version | head -n 1
+      - name: Fetch exact Seeed STM32WLE5JC CubeIDE project commit
+        run: |
+          git clone --filter=blob:none --no-checkout \
+            https://github.com/Seeed-Studio/LoRaWan-E5-Node.git /tmp/thermo-see
+          git -C /tmp/thermo-see checkout --detach 163c05379b1805dd8f2c061d4557a69985acc953
+          test "$(git -C /tmp/thermo-see rev-parse HEAD)" = 163c05379b1805dd8f2c061d4557a69985acc953
+      - name: Compile and link complete STM32WLE5JCIx reference firmware
+        run: |
+          python -m firmware.stm32wle5jc.build_cube_gcc \
+            --vendor-root /tmp/thermo-see \
+            --output-dir /tmp/thermo-wio-reference-image
+          test -s /tmp/thermo-wio-reference-image/thermo_wio_e5_rf_reference.elf
+          test -s /tmp/thermo-wio-reference-image/thermo_wio_e5_rf_reference.hex
+          arm-none-eabi-size /tmp/thermo-wio-reference-image/thermo_wio_e5_rf_reference.elf
+      - name: Surface image provenance and explicit physical validation gap
+        if: always()
+        run: |
+          {
+            echo "## Thermo-IoT STM32WLE5JC"
+            echo "Vendor code is pinned; no licensed vendor source is committed."
+            if [ -s /tmp/thermo-wio-reference-image/build-report.json ]; then
+              cat /tmp/thermo-wio-reference-image/build-report.json
+            else
+              echo "**NO VERIFIED LINKED ELF/HEX IN THIS RUN** — inspect compiler log."
+            fi
+            echo "Physical board flash, OTAA provisioning, real RF receipt and TEG/PMIC harvesting NOT tested by CI."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive native image and map (LAB ONLY; NOT FOR FIELD FLASH)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stm32wle5jc-lab-only-reference-firmware
+          path: |
+            /tmp/thermo-wio-reference-image/thermo_wio_e5_rf_reference.elf
+            /tmp/thermo-wio-reference-image/thermo_wio_e5_rf_reference.hex
+            /tmp/thermo-wio-reference-image/thermo_wio_e5_rf_reference.map
+            /tmp/thermo-wio-reference-image/build-report.json
+          if-no-files-found: error
