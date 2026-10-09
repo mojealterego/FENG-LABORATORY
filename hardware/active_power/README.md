@@ -43,3 +43,7 @@ J1 TEG source -> C5 reservoir + primary of external 1:100 transformer (J2 primar
 3. Independent review of thermal, electrical and RF wiring and source mechanical drawings.
 4. Gerber + Excellon drill exports and independent preview; then limited prototype fabrication with current-limited bench bring-up.
 5. Cold-start, brownout, leakage, ESR and peak TX/RX validation. No claims of measured performance until archived data exists.
+
+## Footprint source library
+
+The local `ThermoActive.pretty/` directory and `fp-lib-table` resolve the custom SMD/TH footprints used in the schematic. They are **engineering placeholders**, not manufacturer-validated land patterns. In particular, `RadialCap` stands for an unselected 2.54mm-pitch THT cap and can be dangerous if a larger diameter, different polarity, clearance or thermal derating is required. The SSOP16 land-pattern is provisional and must be compared with Analog Devices GN16 recommended solder pattern before release.

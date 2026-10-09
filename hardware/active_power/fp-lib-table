@@ -1,0 +1,3 @@
+(fp_lib_table
+ (lib (name "ThermoActive")(type "KiCad")(uri "${KIPRJMOD}/ThermoActive.pretty")(options "")(descr "Thermo-IoT harvester engineering candidate footprints"))
+)
