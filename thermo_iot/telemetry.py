@@ -264,13 +264,18 @@ class TelemetryStore:
                    ORDER BY received_at DESC, id DESC LIMIT 1""",
                 (uplink.app_id, uplink.device_id),
             ).fetchone()
-            if latest and uplink.received_at < latest[0]:
+            # Bit 7 means lab RF validation (MCU die temperature, not a
+            # pipe sensor). Such frames are stored for traceability but
+            # must never be treated as process measurements or baseline.
+            if uplink.sample.flags & 0x80:
+                state = "reference_telemetry"
+            elif latest and uplink.received_at < latest[0]:
                 state = "out_of_order"
             else:
                 historical_rows = conn.execute(
                     """SELECT temperature_centi_c FROM readings
                        WHERE app_id=? AND device_id=? AND received_at<=?
-                       AND state <> 'out_of_order'
+                       AND state NOT IN ('out_of_order', 'reference_telemetry')
                        ORDER BY received_at DESC, id DESC LIMIT 50""",
                     (uplink.app_id, uplink.device_id, uplink.received_at),
                 ).fetchall()
