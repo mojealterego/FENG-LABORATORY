@@ -168,6 +168,17 @@ def audit_bundle(root: str|Path, manifest_path: str|Path) -> dict:
         trace=load_power_trace(locations["autonomous_energy_trace"])
         if trace.evidence_type!="measured" or trace.points[-1].elapsed_s<604800:
             raise EvidenceError("Seven-day, operator-marked electrical energy trace not present")
+        # Two endpoint readings do NOT demonstrate observation during a week.
+        # Require at least hourly sampling and a bounded time gap. This
+        # verifies CSV coverage only, not logger power source or calibration.
+        maximum_gap=max(
+            current.elapsed_s - previous.elapsed_s
+            for previous,current in zip(trace.points, trace.points[1:])
+        )
+        if maximum_gap>3600:
+            raise EvidenceError("Seven-day energy sampling gap exceeds one hour")
+        if len(trace.points)<169:
+            raise EvidenceError("Seven-day energy sampling coverage is insufficient")
     except (OSError, ValueError, UnicodeError) as exc:
         if isinstance(exc,EvidenceError):
             raise
@@ -183,6 +194,9 @@ def audit_bundle(root: str|Path, manifest_path: str|Path) -> dict:
         "radio_receipt_content":receipt["delivery_state"],
         "active_pcb_drc_reported":"zero_violations_and_zero_unconnected",
         "energy_trace_duration_s":trace.points[-1].elapsed_s,
+        "energy_trace_samples":len(trace.points),
+        "energy_trace_max_gap_s":maximum_gap,
+        "energy_trace_coverage":"hourly_or_better_observed_timestamps_only",
         "physically_validated":False,
         "requires_independent_hardware_signoff":True,
         "not_verified":[
