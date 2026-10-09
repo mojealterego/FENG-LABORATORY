@@ -59,8 +59,7 @@ class MvpEvidenceBundleTests(unittest.TestCase):
         )
         (root/"autonomous_energy_trace.csv").write_text(
             "elapsed_s,teg_power_uw,evidence_type\n"
-            "0,500,measured\n"
-            "604800,500,measured\n"
+            + "".join(f"{i * 3600},500,measured\n" for i in range(169))
         )
 
     def test_bundle_passes_documentary_consistency_only(self):
@@ -76,6 +75,8 @@ class MvpEvidenceBundleTests(unittest.TestCase):
             self.assertTrue(report["requires_independent_hardware_signoff"])
             self.assertEqual(report["teg_evidence_type"],"measured")
             self.assertEqual(report["radio_receipt_content"],"ttn_receipt_content_matches")
+            self.assertEqual(report["energy_trace_samples"], 169)
+            self.assertEqual(report["energy_trace_max_gap_s"], 3600)
 
     def test_tampered_file_hash_is_rejected(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -111,6 +112,33 @@ class MvpEvidenceBundleTests(unittest.TestCase):
             file.write_text(file.read_text().replace("604800","604799"))
             create_manifest(root,root/"manifest.json")
             with self.assertRaises(EvidenceError):
+                audit_bundle(root,root/"manifest.json")
+
+
+    def test_only_two_endpoint_samples_do_not_prove_seven_day_trace(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            self.build_fixture(root)
+            (root/"autonomous_energy_trace.csv").write_text(
+                "elapsed_s,teg_power_uw,evidence_type\n"
+                + "0,500,measured\n"
+                + "604800,500,measured\n"
+            )
+            create_manifest(root, root/"manifest.json")
+            with self.assertRaisesRegex(EvidenceError, "sampling|coverage|gap"):
+                audit_bundle(root, root/"manifest.json")
+
+    def test_multi_hour_gap_in_energy_trace_is_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            self.build_fixture(root)
+            rows=(root/"autonomous_energy_trace.csv").read_text().splitlines()
+            # Keep 7 days of observations, but remove two hourly readings
+            # to create a 3-hour blind interval.
+            rows=[r for r in rows if not r.startswith(("360000,","363600,"))]
+            (root/"autonomous_energy_trace.csv").write_text("\\n".join(rows)+"\\n")
+            create_manifest(root,root/"manifest.json")
+            with self.assertRaisesRegex(EvidenceError,"sampling|coverage|gap"):
                 audit_bundle(root,root/"manifest.json")
 
     def test_manifest_cannot_be_overwritten(self):
