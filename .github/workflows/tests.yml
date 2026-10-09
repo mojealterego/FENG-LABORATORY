@@ -33,5 +33,7 @@ jobs:
         run: |
           python -m thermo_iot.gateway ingest --db /tmp/thermo-iot-smoke.sqlite --file examples/ttn_v3_uplink.json
           python -m thermo_iot.gateway report --db /tmp/thermo-iot-smoke.sqlite --app district-heat --device pipe-1
+      - name: Time-series energy simulation smoke
+        run: python -m thermo_iot.trace --file examples/synthetic_teg_trace.csv --period-s 600
       - name: Synthetic metrology smoke
         run: python -m thermo_iot.lab --file examples/synthetic_teg_sweep.csv
