@@ -87,6 +87,13 @@ def read_pmic_csv(path: str|Path, *, max_bytes:int=5_000_000):
 def analyze_pmic(points:tuple[PmicPoint,...],evidence_type:str,*,start_v:float=0.1,target_v:float=3.0):
     if evidence_type not in {"synthetic","measured"} or len(points)<2:
         raise PmicValidationError("Invalid PMIC provenance or insufficient data")
+    for point in points:
+        for field,upper in (("elapsed_s",1e8),("vin_v",15),("iin_a",10),
+                            ("vout_v",10),("iout_a",10),("vstore_v",10)):
+            _finite(getattr(point,field),field,0,upper)
+    for old,new in zip(points,points[1:]):
+        if new.elapsed_s<=old.elapsed_s:
+            raise PmicValidationError("PMIC timestamps must be strictly increasing")
     _finite(start_v,"start_v",0,10)
     _finite(target_v,"target_v",0,10)
     if target_v<=start_v:
