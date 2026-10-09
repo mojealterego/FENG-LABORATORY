@@ -34,6 +34,46 @@ class PowerSchematicTests(unittest.TestCase):
             self.assertIn(tuple(start.split()),coords)
             self.assertIn(tuple(end.split()),coords)
 
+
+    def test_transformer_secondary_reaches_both_charging_capacitors(self):
+        """Check a real two-layer conductive graph, not mere net names.
+
+        The existing vendor LTC3108 secondary is J2.3 to C1.1/C2.1.
+        Referenced by datasheet, not a new confidential product feature.
+        """
+        board=(ROOT / "ltc3108_power_breakout.kicad_pcb").read_text()
+        links={}
+        def connect(left,right):
+            links.setdefault(left,set()).add(right)
+            links.setdefault(right,set()).add(left)
+        for ax,ay,bx,by,layer in re.findall(
+            r'\(segment \(start ([\d.]+) ([\d.]+)\) '
+            r'\(end ([\d.]+) ([\d.]+)\) '
+            r'\(width [\d.]+\) \(layer "(F.Cu|B.Cu)"\) \(net 12\)',board
+        ):
+            connect((layer,float(ax),float(ay)),(layer,float(bx),float(by)))
+        via_matches=re.findall(
+            r'\(via \(at ([\d.]+) ([\d.]+)\).*?\(net 12\)',board
+        )
+        self.assertGreaterEqual(len(via_matches),2)
+        for x,y in via_matches:
+            connect(("F.Cu",float(x),float(y)),("B.Cu",float(x),float(y)))
+        def reachable(start,goal):
+            seen={start}
+            stack=[start]
+            while stack:
+                item=stack.pop()
+                if item==goal:
+                    return True
+                for neighbor in links.get(item,()):
+                    if neighbor not in seen:
+                        seen.add(neighbor)
+                        stack.append(neighbor)
+            return False
+        j2=("B.Cu",15.0,47.08)
+        self.assertTrue(reachable(("F.Cu",56.9,17.0),j2))
+        self.assertTrue(reachable(("F.Cu",56.9,24.0),j2))
+
     def test_all_16_pins_and_selected_power_nets(self):
         pcb = (ROOT / "ltc3108_power_breakout.kicad_pcb").read_text()
         start = pcb.index('(footprint "ThermoActive:SSOP16_P0635"')
