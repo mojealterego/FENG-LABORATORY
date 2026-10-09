@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thermo-IoT | Telemetria laboratoryjna</title>
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="header">
+      <div>
+        <p class="eyebrow">FENG-LABORATORY / PROTOTYP CYFROWY</p>
+        <h1>Thermo-IoT</h1>
+        <p class="sub">Telemetria i energetyka węzłów · odczyt tylko z lokalnej bazy</p>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite">Ładowanie danych…</div>
+    </header>
+    <div class="notice">Panel jest demonstratorem analitycznym. Odchylenia temperatury nie są diagnozą wycieku i nie mogą służyć do sterowania siecią ciepłowniczą.</div>
+    <section class="control" aria-label="Wybór punktu pomiarowego">
+      <label for="device">Punkt telemetryczny</label>
+      <select id="device" aria-label="Wybierz urządzenie" disabled><option>Wczytywanie…</option></select>
+      <button id="refresh" type="button">Odśwież</button>
+      <span class="timestamp" id="update">Brak aktualizacji</span>
+    </section>
+    <section class="cards" aria-label="Wskaźniki">
+      <article class="card"><span>Temperatura</span><strong id="temperature">—</strong><small>°C · ostatni odczyt</small></article>
+      <article class="card"><span>Napięcie bufora</span><strong id="voltage">—</strong><small>V · ostatni odczyt</small></article>
+      <article class="card"><span>Pakiety</span><strong id="packets">—</strong><small>łącznie dla punktu</small></article>
+      <article class="card"><span>Kandydaci anomalii</span><strong id="anomalies">—</strong><small>niepotwierdzone zdarzenia</small></article>
+    </section>
+    <section class="chart card" aria-label="Historia temperatury">
+      <h2>Historia temperatury</h2>
+      <p class="help">Ostatnie 100 zapisów z SQLite · chronologia według czasu odbioru, nie czasu pomiaru.</p>
+      <canvas id="chart" width="900" height="320" role="img" aria-label="Wykres temperatury kolejnych zapisów"></canvas>
+      <p class="help" id="graph-message">Brak danych do wykresu.</p>
+    </section>
+    <footer>Źródło danych: The Things Stack v3 / lokalny SQLite · brak połączenia z fizyczną siecią w tej wersji.</footer>
+  </main>
+</body>
+</html>
