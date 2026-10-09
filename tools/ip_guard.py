@@ -122,7 +122,7 @@ def scan_git_range(repo: Path, base: str, head: str) -> list[str]:
         sha = _safe_ref(commit)
         paths = _filenames(_git(repo, "diff-tree", "--no-commit-id",
                                 "--name-only", "--diff-filter=ACMR", "-z",
-                                "--root", "-r", sha))
+                                "--root", "-m", "-r", sha))
         for path in paths:
             violations.extend(_probe(repo, path, sha))
     return violations
