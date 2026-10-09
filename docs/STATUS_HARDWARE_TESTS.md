@@ -64,3 +64,16 @@ Po wyrównaniu 13 symboli (w tym 16 pinów LTC3108) i końców przewodów do sia
 [GitHub Actions: audyt KiCad po korekcie siatki](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37954140570).
 
 **Ważne:** zielony przebieg oznacza powodzenie diagnostyki i kontraktów połączeń, a nie pomyślny DRC aktywnego projektu. Raport ten jawnie nadal pokazuje 30 niepołączonych ścieżek.
+
+### 9 października 2026 — rzeczywisty pełny cross-link obrazu STM32WLE5JCIx
+
+**GitHub Actions 37956017016: SUCCESS.** Rozwiązano źródła i definicje kompilatora z oficjalnego projektu Seeed STM32CubeIDE (`.project/.cproject`) przypiętego do rewizji `163c05379b1805dd8f2c061d4557a69985acc953`, dołączono nakładkę 8-bajtowego Thermo-IoT, startup Cortex-M4 i linker script STM32WLE5JCIX. Narzędzia `arm-none-eabi-gcc` i `arm-none-eabi-objcopy` wygenerowały **rzeczywiste `.elf`, `.hex`, `.map`** dostępne jako artefakt CI.
+
+- Zużycie FLASH: **63 564 B / 262 144 B (24,25%)**.
+- Dane: **DATA = 228 B, BSS = 8068 B**, TEXT = 63 328 B.
+- SHA-256 HEX: `e9a3d1df50e8c5a0eb3a52d03a78ce236c72ead47e3924e0c9d1b1b63d66a4ea`.
+- [Artefakt obrazu referencyjnego do weryfikacji](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37956017016/artifacts/11627633166).
+
+Ta walidacja **zamyka problem kompilowalności obrazu RF** dla konkretnego targetu. **Nie zamyka** wymogu pełnego firmware czujnikowego: brak kodu kalibracji prawdziwego czujnika temperatury rury, ADC pomiaru superkondensatora i PMIC, włączenia modelu zarządzania energią do docelowego schedulera LoRaWAN, zapisu kluczy OTAA/NVM i automatycznego STOP2. Nie wolno przedstawiać tego obrazu jako zatwierdzonego firmware produkcyjnego ani jako fizycznego MVP.
+
+**Prawa oryginalnych części Thermo-IoT:** © 2026 Mojeaterego — Andrzej Mikulski. Wszelkie prawa zastrzeżone. Prawa do źródeł Seeed, STM32CubeWL i zależności pozostają przy ich autorach.

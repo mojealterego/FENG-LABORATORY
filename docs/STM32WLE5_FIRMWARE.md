@@ -34,3 +34,9 @@ cc -std=c11 -Wall -Wextra -Werror -pedantic -Ifirmware/include \
 ```
 
 **Wersja bez przeprogramowania MCU:** oddzielny harness `python -m thermo_iot.lorawan_fieldtest` obsługuje fabryczne AT firmware Wio-E5 i pozwala zbadać radio i backend po fizycznym podłączeniu.
+
+## Potwierdzenie budowy linkowanego obrazu referencyjnego (9.10.2026)
+
+**Nowa funkcja:** `firmware/stm32wle5jc/build_cube_gcc.py` samoczynnie odczytuje pliki projektu producenta STM32CubeIDE, kompiluje zależności i wykonuje linkowanie ELF w pełnej architekturze ARM Cortex-M4. Reprodukowalna konfiguracja CI w `.github/workflows/stm32-native-image.yml`.
+
+Wynik: [GitHub Actions 37956017016](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37956017016) **SUCCESS**, z archiwum `.elf/.hex/.map`. Jest to obraz do **laboratoryjnej integracji RF**, nie obraz finalnego sensora TEG i nie wgrany fizycznie firmware. Samo istnienie `.hex` nie dowodzi, że węzeł nadaje, posiada bezpieczne klucze, czy jest zasilany TEG.

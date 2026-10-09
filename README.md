@@ -66,7 +66,7 @@ Otwórz `http://127.0.0.1:8766/` na komputerze, na którym działa Python. Dane 
 **Implementacje repozytoryjne są przeznaczone do prób laboratoryjnych — brak dowodu fizycznej integracji.** Zobacz [macierz stanu dowodowego](docs/STATUS_HARDWARE_TESTS.md).
 
 - [KiCad — schemat i PCB pasywnego adaptera stanowiska](hardware/kicad/) (nie jest finalną płytą PMIC/MCU ani wydanym Gerberem).
-- [STM32WLE5JC — aplikacja C11 i wymagany adapter CubeWL](docs/STM32WLE5_FIRMWARE.md) (bez gotowego obrazu `.hex`).
+- [STM32WLE5JC — aplikacja C11 i wymagany adapter CubeWL](docs/STM32WLE5_FIRMWARE.md) (laboratoryjny ELF/HEX z GNU ARM GCC dostępny z CI; niewgrany do fizycznego MCU).
 - [Wio-E5: sprzętowy test jednej transmisji i weryfikacja odczytu TTN](docs/TEST_LORAWAN_REAL.md) (wymaga rzeczywistego urządzenia).
 - [TEG i PMIC — akwizycja SCPI oraz metrologia](docs/TEG_PMIC_CAPTURE.md) (bez pomiarów rzeczywistych w repo).
 
@@ -90,12 +90,20 @@ COM3 jest tylko przykładem Windows i musi zostać zastąpiony faktycznym portem
 **Nowe elementy przeznaczone do rzeczywistej budowy demonstratora:**
 
 - [LTC3108GN16 — schemat aktywnego PMIC i projekt PCB w KiCad](hardware/active_power/) — PCB **jeszcze bez poprowadzonych ścieżek**, do przeglądu ERC/DRC; transformator 1:100 poza płytką.
-- [Natywny overlay STM32CubeIDE dla STM32WLE5JC / Wio-E5](firmware/stm32wle5jc/README.md) — generator 4 plików integrowanych z oficjalnym Seeed LoRaWAN End Node; **brak wyprodukowanego pliku ELF/HEX i flash urządzenia**.
+- [Natywny overlay STM32CubeIDE dla STM32WLE5JC / Wio-E5](firmware/stm32wle5jc/README.md) — generator 4 plików integrowanych z oficjalnym Seeed LoRaWAN End Node; **zbudowano ELF/HEX dla profilu laboratoryjnego; brak flash urządzenia**.
 - [Pobieranie rzeczywistych parametrów PMIC z pięciu przyrządów SCPI](thermo_iot/pmic.py) — wejście, wyjście, VSTORE, próba cold-start (wymaga własnej aparatury).
 - [Próba radiowa Wio-E5 EU868 i weryfikacja odczytu TTN](thermo_iot/lorawan_fieldtest.py) — program istnieje, **brak rzeczywistego raportu odbioru**.
 - [Aktualna macierz GO/NO-GO dla sprzętowego MVP](docs/STATUS_HARDWARE_TESTS.md).
 
 **Uwaga:** bit 7 ramki LoRaWAN (0x80) oznacza laboratoryjny odczyt temperatury wewnętrznej MCU. Backend przechowuje te rekordy jako `reference_telemetry` i **wyklucza je z wykrywania anomalii rurociągu**. Nie wolno przedstawiać ich jako pomiaru rury lub wycieku.
+
+## Kamień milowy: pełny build referencyjnego firmware STM32WLE5JCIx
+
+**Weryfikacja 9.10.2026:** w GitHub Actions rzeczywiście skompilowano i zlinkowano natywny obraz **ELF/Intel HEX**, ze startup i linker script producenta Seeed, na `arm-none-eabi-gcc`. Dane kompilacji: **63 564 B FLASH (24,25% z 256 KiB)**, **8 068 B BSS** i **228 B DATA**. SHA-256 HEX: `e9a3d1df50e8c5a0eb3a52d03a78ce236c72ead47e3924e0c9d1b1b63d66a4ea`.
+
+[GitHub Actions: udany pełny build ELF/HEX](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37956017016) · [archiwum ELF/HEX/MAP](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37956017016/artifacts/11627633166) · [skrypt kompilacji](firmware/stm32wle5jc/build_cube_gcc.py).
+
+**Granica dowodowa:** jest to kompletna kompilacja **referencyjnego firmware LoRaWAN RF** (temperatura krzemu STM32, ręcznie brak TEG/supercap), a **nie docelowy pełny firmware bezbateryjnego czujnika rury**. Nie nastąpiło programowanie układu SWD, OTAA w środowisku fizycznym, pomiar TX ani odbiór w TTN.
 
 ## Warunki przed zgłoszeniem
 
