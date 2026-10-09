@@ -59,6 +59,30 @@ Otwórz `http://127.0.0.1:8766/` na komputerze, na którym działa Python. Dane 
 - [Firmware: histereza i bramka mocy](docs/FIRMWARE_POWER_POLICY.md)
 - [Granice bezpieczeństwa IT/OT](SECURITY.md)
 
+## Faza HW / Firmware / Walidacja LoRaWAN (2026-10-09)
+
+**Implementacje repozytoryjne są przeznaczone do prób laboratoryjnych — brak dowodu fizycznej integracji.** Zobacz [macierz stanu dowodowego](docs/STATUS_HARDWARE_TESTS.md).
+
+- [KiCad — schemat i PCB pasywnego adaptera stanowiska](hardware/kicad/) (nie jest finalną płytą PMIC/MCU ani wydanym Gerberem).
+- [STM32WLE5JC — aplikacja C11 i wymagany adapter CubeWL](docs/STM32WLE5_FIRMWARE.md) (bez gotowego obrazu `.hex`).
+- [Wio-E5: sprzętowy test jednej transmisji i weryfikacja odczytu TTN](docs/TEST_LORAWAN_REAL.md) (wymaga rzeczywistego urządzenia).
+- [TEG i PMIC — akwizycja SCPI oraz metrologia](docs/TEG_PMIC_CAPTURE.md) (bez pomiarów rzeczywistych w repo).
+
+Przykładowy test kontrolny portu, **bez emisji**:
+
+```bash
+python -m pip install pyserial
+python -m thermo_iot.lorawan_fieldtest --port COM3
+```
+
+Pojedynczy test fizycznego nadawania (tylko po skonfigurowaniu OTAA/anteny i sprawdzeniu lokalnych wymogów radiowych):
+
+```bash
+python -m thermo_iot.lorawan_fieldtest --port COM3 --send --temperature-centic 4300 --capacitor-mv 3000
+```
+
+COM3 jest tylko przykładem Windows i musi zostać zastąpiony faktycznym portem. Liczby w tym teście są wpisywane przez operatora; nie dowodzą pracy czujnika. Odbiór należy oddzielnie potwierdzić w The Things Stack.
+
 ## Warunki przed zgłoszeniem
 
 Wymagane są potwierdzone dane pomysłodawców, właścicieli praw IP, zasoby, kompetencje, oświadczenia formalne i oryginalny formularz operatora. Kod i wyniki symulacji nie mogą zastępować protokołów zbudowania i walidacji urządzenia.
