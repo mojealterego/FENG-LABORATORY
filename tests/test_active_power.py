@@ -55,7 +55,7 @@ class PowerSchematicTests(unittest.TestCase):
         via_matches=re.findall(
             r'\(via \(at ([\d.]+) ([\d.]+)\).*?\(net 12\)',board
         )
-        self.assertGreaterEqual(len(via_matches),2)
+        self.assertEqual(len(via_matches),2, "Use one via per pump capacitor; no duplicate RF paths")
         for x,y in via_matches:
             connect(("F.Cu",float(x),float(y)),("B.Cu",float(x),float(y)))
         def reachable(start,goal):
