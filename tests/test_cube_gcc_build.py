@@ -31,7 +31,7 @@ class CubeGccBuildTests(unittest.TestCase):
 
     def test_rejects_repo_escape_source(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ide=Path(tmp)/"STM32CubeIDE"
+            ide=Path(tmp)/"seeed/Projects/Applications/LoRaWAN/LoRaWAN_End_Node/STM32CubeIDE"
             ide.mkdir()
             (ide/".project").write_text(
                 "<projectDescription><linkedResources><link><name>escape.c</name>"
@@ -43,7 +43,8 @@ class CubeGccBuildTests(unittest.TestCase):
 
     def test_parse_compiler_includes_and_definitions(self):
         with tempfile.TemporaryDirectory() as tmp:
-            ide=Path(tmp)
+            ide=Path(tmp)/"seeed/Projects/Applications/LoRaWAN/LoRaWAN_End_Node/STM32CubeIDE"
+            ide.mkdir(parents=True)
             (ide/".cproject").write_text("""<cproject>
               <cconfiguration name="Debug">
                 <tool name="MCU GCC Compiler">
@@ -54,11 +55,12 @@ class CubeGccBuildTests(unittest.TestCase):
                   <option name="Define symbols (-D)">
                     <listOptionValue value="CORE_CM4"/>
                     <listOptionValue value="STM32WLE5xx"/>
+                    <listOptionValue value="USE_HAL_DRIVER"/>
                   </option>
                 </tool>
               </cconfiguration></cproject>""")
             inc,defines=parse_cproject_includes(ide)
-            self.assertEqual(defines,("CORE_CM4","STM32WLE5xx"))
+            self.assertEqual(defines,("CORE_CM4","STM32WLE5xx","USE_HAL_DRIVER"))
             self.assertEqual(len(inc),2)
             self.assertEqual(inc[0],(ide/"Debug/../../Core/Inc").resolve())
 
