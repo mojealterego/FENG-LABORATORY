@@ -17,20 +17,30 @@ Wio-E5 mini / Development Kit z MCU ST **STM32WLE5JC**. Na początkowym etapie u
 
 ```bash
 python -m thermo_iot.lorawan_fieldtest --port COM3
-python -m thermo_iot.lorawan_fieldtest --port COM3 --send --temperature-centic 4300 --capacitor-mv 3000
+python -m thermo_iot.lorawan_fieldtest --port COM3 --send --temperature-centic 4300 --capacitor-mv 3000 \
+  --app-id thermo-lab --device-id thermo-test --report rf-attempt-001.json
 ```
 
 Pierwsza komenda sprawdza AT/region/OTAA/FPort **bez transmisji**. Druga wykonuje `AT+JOIN` oraz `AT+MSGHEX` dla ramki v1 (FPort=10), wyłącznie po jawnej fladze `--send`. Podane liczby są **wpisane ręcznie**, a nie pochodzą z przetwornika ADC.
 
-## Weryfikacja dostarczenia
+## Dwustopniowy protokół wysłania i niezależnego odbioru
 
-**`+MSGHEX: Done` oznacza koniec operacji po stronie modemu, nie potwierdza odbioru przez TTN.** Aby potwierdzić zawartość, w konsoli TTN otworzyć Live Data, eksportować pełny faktyczny uplink v3 jako JSON; nie eksportować ani nie commitować tokenów/kluczy. Porównać pochodzący niezależnie z TTN zapis z wysłanymi polami:
+**Przed emisją:** operator wybiera nowy plik `rf-attempt-001.json`. Program sprawdza, że plik nie istnieje, a następnie generuje losowy, niezerowy **7-bitowy znacznik próby** w dolnych bitach flag i zawsze ustawia **0x80** (telemetria referencyjna, NIE pomiar rurociągu). Dzięki temu backend wyklucza ręcznie wpisane temperatury z detektora awarii.
+
+**Etap A: komendy sprzętowe** `--send --report` wymagają fizycznego Wio-E5, zewnętrznej anteny, legalnej konfiguracji EU868 i skonfigurowanego konta TTN. Po zakończeniu AT+JOIN i AT+MSGHEX skrypt zapisuje raport z czasem rozpoczęcia/zakończenia operacji oraz dokładnymi 8 bajtami — stan `pending_external_ttn_receipt`. **To nie jest dowód odbioru radiowego.**
+
+**Etap B: eksport niezależnego, rzeczywistego uplinku z TTN** (z konsoli The Things Stack, po wykonaniu próby) i weryfikacja bez portu szeregowego:
 
 ```bash
-python -m thermo_iot.lorawan_fieldtest --port COM3 --send --temperature-centic 4300 --capacitor-mv 3000 \
-  --ttn-receipt ttn-actual-uplink.json --app-id thermo-lab --device-id thermo-test
+python -m thermo_iot.lorawan_fieldtest \
+  --verify-report rf-attempt-001.json \
+  --ttn-receipt ttn-actual-uplink.json
 ```
 
-Program porównuje: application_id, device_id, FPort=10, pole binarne `frm_payload`, licznik FCnt, session_key_id oraz czas. Wynik `ttn_receipt_content_matches` nie jest kryptograficznym potwierdzeniem źródła pliku. Przy realnym odbiorze trzeba zarchiwizować podpisany protokół, identyfikator urządzenia, potwierdzony uplink z konsoli TTN, RSSI/SNR, SF/BW i profil poboru energii oraz zweryfikować zgodność licznika, czasu i sesji.
+Wymagane: ten sam app_id, device_id, FPort=10, pełne 8 bajtów zawierające znacznik próby, poprawny FCnt, session_key_id, czas TTN `received_at` przypadający od rozpoczęcia próby do maksymalnie 5 minut po jej zakończeniu. Import odrzuca poprzednie pakiety z identyczną temperaturą ale innym znacznikiem i wszystkie pakiety sprzed próby. Samo dopasowanie nie dowodzi autentyczności pliku JSON — należy zachować oryginalny eksport TTN, zegar stanowiska, konfigurację urządzenia, RSSI/SNR i niezależny dziennik operatora.
 
-**Bramka TRL:** raport realnej pracy może powstać dopiero po wykonaniu prób; same testy mock serial nie stanowią testów radiowych.
+**Uwaga do metrologii:** `--temperature-centic`, `--capacitor-mv`, `--teg-power-uw` oznaczają wartości **ręcznie podane przez operatora**; nie powstają z fizycznych czujników. Bit 0x80 blokuje ich wykorzystanie do statystyki wycieków, również gdy urządzenie zostanie odebrane przez bramkę.
+
+**Zastrzeżenia:** 7-bitowy znacznik nie jest kryptograficznym nonce, a zegar komputera nie jest synchronizowany automatycznie z TTN. Ta metoda zwiększa odporność na omyłkowe przypisanie starego uplinku, ale nie zapewnia formalnego dowodu transmisji ani odporności na fałszowanie. Najwyższą wiarygodność zapewnia operator i niezależna weryfikacja logów TTN.
+
+**Prawa autorskie:** © 2026 Mojeaterego — Andrzej Mikulski. Wszelkie prawa zastrzeżone. Kontakt: mojealterego21@gmail.com, +48 455 575 337.
