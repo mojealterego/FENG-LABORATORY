@@ -1,25 +1,32 @@
-# Thermo-IoT — status dowodowy prac (9 października 2026)
+# Thermo-IoT — rejestr weryfikacji hardware MVP
 
-| Element żądania | Artefakt w `main` | Zakres ukończony w oprogramowaniu | Warunek fizycznego / formalnego zaliczenia |
+**Aktualizacja:** 9.10.2026. Wykonane zostały realne pliki KiCad, kod firmware/interoperability, akwizycja SCPI i testy hostowe. **Nie wykonano prac wymagających fizycznego sprzętu.**
+
+| Wymóg | Plik/wyjście | Dowód uzyskany | Brakujący twardy warunek |
 |---|---|---|---|
-| Schemat elektroniczny | `hardware/kicad/thermo_bench_carrier.kicad_sch` | Native KiCad schemat **pasywnego adaptera pomiarowego** pięciu złączy | KiCad ERC, dobór docelowego PMIC/TEG i regulatora po testach, pełny schemat aktywnego urządzenia |
-| Projekt PCB | `hardware/kicad/thermo_bench_carrier.kicad_pcb` i biblioteka `.pretty` | PCB 70×44 mm dwustronna, trasy 3,3 V/UART/GND, izolowane złącza pomiarowe | otwarcie w KiCad, DRC, review DFM, zamówienie, montaż, badania EMC / termiczne |
-| Firmware konkretnego MCU | `firmware/src/thermo_iot_app.c`, `thermo_iot_power_policy.c`, `thermo_iot_frame.c` | Host-verified **C11 application core** dla planowanego STM32WLE5JC | dołączenie STM32CubeWL HAL, BSP, I2C/ADC, OTAA keys, NVM LoRaWAN, RTC/STOP2; cross-compile HEX + SWD flash + urządzenie |
-| Pomiar TEG/PMIC | `thermo_iot.bench_scpi`, `thermo_iot.lab` | Sterowana przez operatora akwizycja z pary woltomierz+amperomierz, analiza mocy | fizyczny TEG, przyrządy kalibrowane, rejestr temperatur na module, cold-start PMIC, scenariusze najgorszego przypadku |
-| Rzeczywista transmisja LoRaWAN | `thermo_iot.lorawan_fieldtest` + parser TTN | Procedura UART Wio-E5 EU868, join OTAA, 8 B na FPort 10 i porównanie eksportu TTN | fizyczny moduł/antena/gateway; `AT+MSGHEX: Done` nie wystarcza — oryginalny odebrany uplink TTN + parametry RF |
-| Jakość oprogramowania | `.github/workflows/tests.yml` | automatyczne Python/C11, JSON backend, sanity KiCad | testy sprzętowe, KiCad ERC/DRC, EMC, radio i laboratoryjny raport osobno |
+| Schemat aktywnego generatora | `hardware/active_power/ltc3108_power_breakout.kicad_sch` | zapisany schemat LTC3108 GN16, kondensatory/wyprowadzenia | otworzenie KiCad, 100% zweryfikowana netlista, elektryczny ERC i zasilanie docelowej płytki MCU |
+| PCB aktywne | `hardware/active_power/ltc3108_power_breakout.kicad_pcb` | rozmieszczenie footprints i nets | **trasowanie wszystkich nets, realny DRC, zamówienie, test PCB** |
+| PCB pomocnicze | `hardware/kicad/thermo_bench_carrier.kicad_pcb` | płytka adaptera laboratoryjnego z trasami UART/3.3V | KiCad ERC/DRC, montaż, test ciągłości i zasilania |
+| Firmware STM32WLE5JC | `firmware/stm32wle5jc/make_overlay.py`, `firmware/src/thermo_iot_app.c` | testowany hostowo application core C11 i generator overlay dla prawdziwego Seeed SDK | rzeczywisty build STM32CubeIDE, `.elf/.hex`, integracja czujnika, ADC, zasilania, SWD/flash, praca bezbateryjna |
+| Pomiar TEG | `thermo_iot/bench_scpi.py` + `thermo_iot.lab` | kod akwizycji przyrządowej i analizy krzywych P-V | fizyczne stanowisko, seria I-V, `ΔT` na obu stronach TEG, protokół kalibracji |
+| Pomiar PMIC | `thermo_iot/pmic.py` | kod dla Vin/Iin, Vout/Iout i VSTORE, cold-start | 5 realnych przyrządów / DAQ, rejestr surowych danych, ESR oraz piki |
+| Realny uplink LoRaWAN | `thermo_iot.lorawan_fieldtest` | kod AT+JOIN/MSGHEX i weryfikacja eksportu TTN | podłączona antena i Wio-E5, network server, bramka/zasięg, RSSI/SNR/FCnt + niezależnie otrzymany uplink |
+| Ochrona wiarygodności procesu | `thermo_iot.telemetry` | rama flags 0x80 quarantined as `reference_telemetry`, testy regresji | sprawdzenie na rzeczywistym środowisku przez operatora |
 
-**Pomiary rzeczywiste: BRAK. Sprzętowo zweryfikowany PCB: BRAK. Wgrany program MCU: BRAK. Potwierdzony realny uplink: BRAK.** Nie nadajemy projektu poziomu TRL na podstawie testów offline.
+## Procedura realnego zamknięcia
 
-## Konkretny plan zamknięcia dowodowego
+1. Wybór konkretnych elementów i zatwierdzenie pinoutu transformatora LPR6235-752SML, kondensatorów i footprintów SSOP16/obudowy. Układ LTC3108 VSTORE ok. 5V **NIE jest napięciem zasilania MCU**; wybór zasilania MCU musi zapewnić zakres 1,8–3,6V.
+2. KiCad: sprawdzenie obu projektów, poprawa footprintów, aktywne PCB do trasowania, raporty ERC/DRC, Gerber/Excellon i niezależny przegląd.
+3. Wykonanie laminatu, montaż w bezpiecznym izolowanym układzie pomiarowym, inspekcja, test ciągłości bez zasilania.
+4. Instrumentacja TEG/PMIC dla kilku gradientów (w tym niskich, lecz osiągalnych), obciążenia i docelowego radiatora; archiwizacja `measured` CSV, numerów instrumentów, zdjęć, dat kalibracji.
+5. Generacja overlay, praca w STM32CubeIDE z Seeed `LoRaWAN_End_Node`, build dla **STM32WLE5JC**, SWD flash, upewnienie się co do kluczy OTAA bez ich publikacji. Stan synchronizacji LoRaWAN musi przetrwać reset zgodnie ze stosem.
+6. Pojedynczy fizyczny uplink EU868 przy właściwej antenie; do protokołu dołączyć rzeczywisty eksport TTN, timestamp, RSSI/SNR, fCnt, payload, własny pomiar energii TX/RX.
+7. Długookresowy test funkcjonowania z energii TEG przy rzeczywistych warunkach, analiza trwałości i niezawodności, zgody operatora infrastruktury. **Dopiero wtedy można mówić o zweryfikowanym urządzeniu lub przyznać realistyczny TRL.**
 
-1. Zweryfikować elektryczne podłączenie J2 na aktualnej rewizji Wio-E5, uniknąć równoczesnych zasilaczy USB i J1. Na PCB brakuje ochrony zasilania; nie podłączać do instalacji bez dodatkowego zabezpieczenia.
-2. Otworzyć KiCad 9/10 i przejść ERC/DRC, sprawdzić footprinty i pozycje mechaniczne; odnotować dokładną wersję narzędzia i raporty. Test spójności nawiasów oraz nets w CI nie jest ERC/DRC.
-3. Sprawdzić parametry TEG (V-I, P-I), napięcie uruchomienia PMIC, ładowanie bufora i profil TX/RX dla konkretnego SF przy kontrolowanym `ΔT`.
-4. Dołączyć CubeWL LoRaWAN End Node (RF PA4/PA5, USART1 PB6/PB7 zgodnie z Seeed), wykonać cross-compile i zaprogramować Wio-E5 po zachowaniu identyfikatorów fabrycznych; skonfigurować bezpieczną OTAA.
-5. Test radiowy wyłącznie z anteną i prawidłową konfiguracją EU868. Utrwalić odczyt z TTN (RSSI, SNR, fCnt, payload oraz datę) i zestawić ze śladem TX.
-6. Wykonać 7-dniowy test bez zasilania zewnętrznego, raportować czas niedostępności, zużycie energii, brak radiowy, dryft sensorów oraz decyzję GO/NO-GO.
+**Bez twardych dowodów 3–7 wynik pozostaje projektem laboratoryjnym o zweryfikowanej części software.** Nie wolno opisać tego jako zbudowanego czy funkcjonującego węzła bezbateryjnego.
 
-## Kryterium akceptacji
+## Oficjalne źródła hardware
 
-**Faza cyfrowa:** repozytorium, testy CI i reprodukowalne pliki. **Faza demonstratora fizycznego:** wymaga własnej próbki hardware i rzeczywistych wyników. Brak ich nie można zastąpić syntetycznymi rekordami, symulacją ani wnioskiem grantowym.
+- LTC3108 Rev D: https://www.analog.com/media/en/technical-documentation/data-sheets/3108fc.pdf
+- Seeed LoRaWAN firmware: https://github.com/Seeed-Studio/LoRaWan-E5-Node
+- Seeed Wio-E5 mini: https://wiki.seeedstudio.com/LoRa_E5_mini/

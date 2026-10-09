@@ -83,6 +83,18 @@ python -m thermo_iot.lorawan_fieldtest --port COM3 --send --temperature-centic 4
 
 COM3 jest tylko przykładem Windows i musi zostać zastąpiony faktycznym portem. Liczby w tym teście są wpisywane przez operatora; nie dowodzą pracy czujnika. Odbiór należy oddzielnie potwierdzić w The Things Stack.
 
+## Projekt aktywnego harvester'a i ścieżka weryfikacji fizycznej — październik 2026
+
+**Nowe elementy przeznaczone do rzeczywistej budowy demonstratora:**
+
+- [LTC3108GN16 — schemat aktywnego PMIC i projekt PCB w KiCad](hardware/active_power/) — PCB **jeszcze bez poprowadzonych ścieżek**, do przeglądu ERC/DRC; transformator 1:100 poza płytką.
+- [Natywny overlay STM32CubeIDE dla STM32WLE5JC / Wio-E5](firmware/stm32wle5jc/make_overlay.py) — generator 4 plików integrowanych z oficjalnym Seeed LoRaWAN End Node; **brak wyprodukowanego pliku ELF/HEX i flash urządzenia**.
+- [Pobieranie rzeczywistych parametrów PMIC z pięciu przyrządów SCPI](thermo_iot/pmic.py) — wejście, wyjście, VSTORE, próba cold-start (wymaga własnej aparatury).
+- [Próba radiowa Wio-E5 EU868 i weryfikacja odczytu TTN](thermo_iot/lorawan_fieldtest.py) — program istnieje, **brak rzeczywistego raportu odbioru**.
+- [Aktualna macierz GO/NO-GO dla sprzętowego MVP](docs/STATUS_HARDWARE_TESTS.md).
+
+**Uwaga:** bit 7 ramki LoRaWAN (0x80) oznacza laboratoryjny odczyt temperatury wewnętrznej MCU. Backend przechowuje te rekordy jako `reference_telemetry` i **wyklucza je z wykrywania anomalii rurociągu**. Nie wolno przedstawiać ich jako pomiaru rury lub wycieku.
+
 ## Warunki przed zgłoszeniem
 
 Wymagane są potwierdzone dane pomysłodawców, właścicieli praw IP, zasoby, kompetencje, oświadczenia formalne i oryginalny formularz operatora. Kod i wyniki symulacji nie mogą zastępować protokołów zbudowania i walidacji urządzenia.
