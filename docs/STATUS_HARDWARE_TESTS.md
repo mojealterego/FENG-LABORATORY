@@ -30,3 +30,21 @@
 - LTC3108 Rev D: https://www.analog.com/media/en/technical-documentation/data-sheets/3108fc.pdf
 - Seeed LoRaWAN firmware: https://github.com/Seeed-Studio/LoRaWan-E5-Node
 - Seeed Wio-E5 mini: https://wiki.seeedstudio.com/LoRa_E5_mini/
+
+
+## Automatyczny audyt KiCad — 2026-10-09 (pierwszy przebieg)
+
+**Wykonano realną analizę za pomocą `kicad-cli 10.0.6` w GitHub Actions**, zamiast wyłącznie sprawdzenia nawiasów plików:
+
+| Projekt | Import/netlista | ERC | PCB DRC i połączenia |
+|---|---|---|---|
+| Pasywny `thermo_bench_carrier` | poprawny eksport | 0 błędów, **14 ostrzeżeń** w przebiegu początkowym | **0 naruszeń, 0 niepodłączonych padów** |
+| Aktywny `ltc3108_power_breakout` | poprawny eksport | 0 błędów, **82 ostrzeżenia** w przebiegu początkowym | **13 ostrzeżeń mismatch footprintów i 30 niepodłączonych połączeń** |
+
+Ostrzeżenia ERC dotyczą głównie niewłączonych do konfiguracji bibliotek i końcówek poza siatką; lokalne źródła symboli `.kicad_sym` oraz `sym-lib-table` dodano do repo, ale usunięcie ostrzeżeń **wymaga ponownej walidacji**. W nowszych przebiegach obowiązuje dodatkowo sprawdzanie **rzeczywistej XML-netlisty KiCad** względem pinów, w tym rozdzielenia `VOUT/VSTORE`, logiki `MCU_TX/MCU_RX` oraz linii transformatora.
+
+**Pełny aktywny PCB: NO-GO do zamówienia.** Brak ścieżek dla 30 wymaganych połączeń nie jest kwestią kosmetyczną. Projekty nie mają podpisu inżyniera, niezależnego przeglądu ani walidacji mechanicznej.
+
+[Zarchiwizowany pierwszy audyt KiCad 10](https://github.com/mojealterego/FENG-LABORATORY/actions/runs/37952674687)
+
+Automatycznie wygenerowane Gerbery/Excellon dla **pasywnej płytki laboratoryjnej** są artefaktami do przeglądu, wyraźnie oznaczonymi `NOT_FOR_FABRICATION`. Ich wygenerowanie nie jest dowodem wyprodukowania ani uruchomienia fizycznej płytki.
