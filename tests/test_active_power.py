@@ -12,8 +12,27 @@ class PowerSchematicTests(unittest.TestCase):
         board = (ROOT / "ltc3108_power_breakout.kicad_pcb").read_text()
         self.assertIn('(lib_id "ThermoActive:LTC3108_GN16")', schematic)
         self.assertIn('LTC3108EGN', board)
-        self.assertIn('UNROUTED', board)
-        self.assertEqual(len(re.findall(r'\(segment ', board)), 0)
+        self.assertIn('PARTIAL ROUTE', board)
+        self.assertGreaterEqual(len(re.findall(r'\(segment ', board)), 6)
+
+    def test_charge_pump_capacitors_have_real_track_endpoints(self):
+        board=(ROOT / "ltc3108_power_breakout.kicad_pcb").read_text()
+        # C1.2 -> U1.13 and C2.2 -> U1.14 on the existing
+        # manufacturer's reference harvester breakout, not a novel circuit.
+        for net,start,end in (
+            (8,"59.1 17","48.6 35.6825"),
+            (9,"59.1 24","48.6 35.0475"),
+        ):
+            segments=re.findall(
+                r'\(segment \(start ([\d.]+) ([\d.]+)\) '
+                r'\(end ([\d.]+) ([\d.]+)\) .*?'
+                r'\(layer "F.Cu"\) \(net '+str(net)+r'\)',
+                board,
+            )
+            self.assertGreaterEqual(len(segments),3)
+            coords=[(a,b) for item in segments for a,b in ((item[0],item[1]),(item[2],item[3]))]
+            self.assertIn(tuple(start.split()),coords)
+            self.assertIn(tuple(end.split()),coords)
 
     def test_all_16_pins_and_selected_power_nets(self):
         pcb = (ROOT / "ltc3108_power_breakout.kicad_pcb").read_text()
