@@ -1,0 +1,3 @@
+(fp_lib_table
+ (lib (name "ThermoBench")(type "KiCad")(uri "${KIPRJMOD}/ThermoBench.pretty")(options "")(descr "Bench connector footprints"))
+)

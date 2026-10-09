@@ -31,6 +31,8 @@ jobs:
         run: node --check thermo_iot/static/app.js
       - name: Populate local demonstration database
         run: python -m thermo_iot.demo --db /tmp/thermo-iot-synthetic-ci.sqlite --count 36
+      - name: KiCad source consistency smoke
+        run: python -m unittest discover -s tests -p "test_kicad_source.py" -v
       - name: Energy model smoke
         run: python -m thermo_iot --teg-mw 0.1
       - name: TTN fixture smoke
