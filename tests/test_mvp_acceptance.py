@@ -136,7 +136,7 @@ class MvpEvidenceBundleTests(unittest.TestCase):
             # Keep 7 days of observations, but remove two hourly readings
             # to create a 3-hour blind interval.
             rows=[r for r in rows if not r.startswith(("360000,","363600,"))]
-            (root/"autonomous_energy_trace.csv").write_text("\\n".join(rows)+"\\n")
+            (root/"autonomous_energy_trace.csv").write_text("\n".join(rows)+"\n")
             create_manifest(root,root/"manifest.json")
             with self.assertRaisesRegex(EvidenceError,"sampling|coverage|gap"):
                 audit_bundle(root,root/"manifest.json")
