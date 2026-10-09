@@ -107,6 +107,17 @@ COM3 jest tylko przykładem Windows i musi zostać zastąpiony faktycznym portem
 
 **Granica dowodowa:** jest to kompletna kompilacja **referencyjnego firmware LoRaWAN RF** (temperatura krzemu STM32, ręcznie brak TEG/supercap), a **nie docelowy pełny firmware bezbateryjnego czujnika rury**. Nie nastąpiło programowanie układu SWD, OTAA w środowisku fizycznym, pomiar TX ani odbiór w TTN.
 
+## Ocena jakości uplinków LoRaWAN — tylko analiza lokalnego eksportu TTN
+
+Nowy moduł [`thermo_iot.rf_audit`](docs/RF_FIELD_AUDIT.md) weryfikuje plik JSONL z faktycznie wyeksportowanymi (przez operatora) zdarzeniami The Things Stack v3. Zlicza unikatowe ramki, ponowne dostarczenia, zmiany sesji, nieciągłości FCnt i dostępne RSSI/SNR; izoluje laboratoryjne ramki 0x80 od danych czujnika rury. **Nie wylicza „procentu dostarczonych pakietów” z samych odebranych ramek**, ponieważ nie znamy wszystkich prób nadawania.
+
+```bash
+python -m thermo_iot.rf_audit --file private/mvp-evidence/ttn-uplinks.jsonl \
+  --app-id thermo-lab --device-id pipe-1
+```
+
+Plik JSONL ma być zachowany wyłącznie lokalnie/prywatnie, bez tokenów, kluczy ani nieujawnionych rozwiązań patentowych. Analiza samego eksportu nie poświadcza, że użytkownik przeprowadził transmisje.
+
 ## Prywatne dowody fizycznego MVP (poza GitHub)
 
 Moduł `thermo_iot.mvp_acceptance` analizuje w **prywatnym katalogu** kompletność, SHA-256 i spójność 7 typów dokumentów: TEG I-V, PMIC cold-start, raport z UART, niezależny uplink TTN, wynik DRC **aktywnego** PCB, log flash MCU i zapis 7 dni pracy energetycznej. **Nie nadaje automatycznie statusu „fizyczne MVP wykonane”.**

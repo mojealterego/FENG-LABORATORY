@@ -7,7 +7,7 @@
 | Schemat aktywnego generatora | `hardware/active_power/ltc3108_power_breakout.kicad_sch` | zapisany schemat LTC3108 GN16, kondensatory/wyprowadzenia | otworzenie KiCad, 100% zweryfikowana netlista, elektryczny ERC i zasilanie docelowej płytki MCU |
 | PCB aktywne | `hardware/active_power/ltc3108_power_breakout.kicad_pcb` | rozmieszczenie footprints i nets | **trasowanie wszystkich nets, realny DRC, zamówienie, test PCB** |
 | PCB pomocnicze | `hardware/kicad/thermo_bench_carrier.kicad_pcb` | płytka adaptera laboratoryjnego z trasami UART/3.3V | KiCad ERC/DRC, montaż, test ciągłości i zasilania |
-| Firmware STM32WLE5JC | `firmware/stm32wle5jc/make_overlay.py`, `firmware/src/thermo_iot_app.c` | testowany hostowo application core C11 i generator overlay dla prawdziwego Seeed SDK | trzy skompilowane obiekty Cortex-M4/ARM EABI5; nadal brak całego linked `.elf/.hex` STM32CubeIDE, integracji czujnika, ADC, zasilania, SWD/flash i pracy bezbateryjnej |
+| Firmware STM32WLE5JC | `firmware/stm32wle5jc/build_cube_gcc.py`, `firmware/src/thermo_iot_app.c` | **zbudowany i zlinkowany referencyjny ELF/HEX RF** dla Wio-E5 oraz testowany C11 core | brak flash fizycznego MCU, integracji czujnika, ADC/PMIC i niezależnej pracy z TEG |
 | Pomiar TEG | `thermo_iot/bench_scpi.py` + `thermo_iot.lab` | kod akwizycji przyrządowej i analizy krzywych P-V | fizyczne stanowisko, seria I-V, `ΔT` na obu stronach TEG, protokół kalibracji |
 | Pomiar PMIC | `thermo_iot/pmic.py` | kod dla Vin/Iin, Vout/Iout i VSTORE, cold-start | 5 realnych przyrządów / DAQ, rejestr surowych danych, ESR oraz piki |
 | Realny uplink LoRaWAN | `thermo_iot.lorawan_fieldtest` | kod AT+JOIN/MSGHEX i weryfikacja eksportu TTN | podłączona antena i Wio-E5, network server, bramka/zasięg, RSSI/SNR/FCnt + niezależnie otrzymany uplink |
@@ -81,3 +81,9 @@ Ta walidacja **zamyka problem kompilowalności obrazu RF** dla konkretnego targe
 ## Bramki odbioru fizycznego MVP — integralność dowodów bez publikacji IP
 
 `thermo_iot.mvp_acceptance` weryfikuje offline SHA-256 siedmiu wymaganych artefaktów oraz ich podstawowy kontrakt: pomiary oznaczone przez operatora, PMIC cold-start, dopasowanie niezależnego uplinku do świeżej próby, zero naruszeń DRC aktywnej płytki, dokument flash, co najmniej siedem dni śladu energetycznego. Uruchamia się na prywatnych plikach użytkownika. Odczyty oznaczone `measured` i dopasowany JSON TTN nie stanowią niezależnego poświadczenia autentyczności. Wynik zawsze podaje `physically_validated=false` oraz wymaga podpisu odpowiedzialnego inżyniera po realnym badaniu urządzenia. Przed kolejnym ujawnieniem potencjalnie nowego elementu technicznego obowiązuje [kontrola IP](IP_PROTECTION_PL.md).
+
+## Uzupełnienie zakresu dowodowego — ciągłość pomiarów i jakość RF
+
+W prywatnym walidatorze `mvp_acceptance` nie wystarczają już dwa końcowe rekordy reprezentujące siedem dni. Wymagane są próbki w interwale **nie większym niż 1 godzina**, łącznie co najmniej **169 obserwacji** i przedział pomiarowy nie krótszy niż 604 800 sekund. Obowiązuje wciąż konieczność niezależnego potwierdzenia autentyczności aparatury i braku przerw w zasilaniu.
+
+Dla logów The Things Stack v3 `rf_audit` raportuje nieciągłości FCnt, ponowienia, liczbę sesji, RSSI/SNR oraz udział referencyjnych ramek testowych. **Nie utożsamia brakujących FCnt z rzeczywistym wskaźnikiem strat**, bo nie ma dziennika wszystkich nadanych ramek. Żaden z tych modułów nie zastępuje faktycznej radiowej próby z fizycznym układem.

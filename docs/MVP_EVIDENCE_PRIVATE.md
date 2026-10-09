@@ -16,7 +16,7 @@ Oryginalne części projektu: © 2026 Mojeaterego — Andrzej Mikulski. Wszelkie
 | `ttn_uplink.json` | Niezależnie wyeksportowany rzeczywisty pakiet The Things Stack | zgodność app/device, FPort 10, 8 B/challenge, fCnt, czas serwera |
 | `active_pcb_drc.txt` | Raport KiCad dla **docelowej aktywnej PCB** | zero zgłoszonych naruszeń i zero niepołączonych padów; sam tekst da się sfałszować |
 | `firmware_flash.log` | Log flash SWD/identyfikacji fizycznego MCU | niepusty plik i SHA-256; treść/urządzenie wymaga przeglądu człowieka |
-| `autonomous_energy_trace.csv` | Szereg rejestracji rzeczywistego generatora przy pracy | format `thermo_iot.trace`, `measured`, interwał ≥604800 s; nie dowodzi ciągłości ani pracy bez zewnętrznego źródła |
+| `autonomous_energy_trace.csv` | Szereg rejestracji rzeczywistego generatora przy pracy | format `thermo_iot.trace`, `measured`, ≥604800 s, **≥169 próbek i odstępy ≤3600 s**; wciąż nie dowodzi autentyczności ani pracy bez zewnętrznego zasilania |
 
 **Uwaga:** wyniki testów automatycznych i przykłady `synthetic` nie spełniają tych bramek; nie wolno podmieniać oznaczeń `synthetic` na `measured`. Sama etykieta `measured` także nie dowodzi kalibracji, autorstwa ani pochodzenia pomiaru.
 
@@ -38,3 +38,7 @@ python -m thermo_iot.mvp_acceptance --root private/mvp-evidence
 ## Wymagana interpretacja wyniku
 
 Raport `verification_level: documentary_consistency_only` z `physically_validated: false` oznacza **wyłącznie** spójność przekazanej teczki. Nigdy nie oznacza automatycznej kwalifikacji TRL, patentowalności, bezawaryjności, certyfikacji, pomiaru sprawności PMIC ani rzeczywistej autonomii urządzenia. Fizycznego testu nie da się przeprowadzić na serwerze CI bez laboratorium.
+
+## Uzupełniająca analiza radiowa (niewliczana automatycznie do siedmiu plików)
+
+Przy dłuższym doświadczeniu zapisywać niezależny eksport TTN jako `ttn-uplinks.jsonl` w **prywatnej lokalizacji**. Uruchomić `python -m thermo_iot.rf_audit --file private/mvp-evidence/ttn-uplinks.jsonl --app-id thermo-lab --device-id pipe-1`. Raport pokazuje jedynie obserwowaną serię ramek i parametry odbioru; nie stanowi potwierdzenia PDR ani fizycznego nadawania bez innych danych (log TX, czas/energię, niezależny TTN). [Dokumentacja RF](RF_FIELD_AUDIT.md).
