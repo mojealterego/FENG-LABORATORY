@@ -1,7 +1,6 @@
 #include "thermo_iot_app.h"
 #include <limits.h>
 #include <stddef.h>
-#include <string.h>
 
 bool thermo_iot_app_init(thermo_iot_app *app,
                          const thermo_iot_platform *platform,
@@ -16,7 +15,7 @@ bool thermo_iot_app_init(thermo_iot_app *app,
         || platform->request_uplink == NULL) {
         return false;
     }
-    memset(app, 0, sizeof(*app));
+    *app = (thermo_iot_app){0};
     app->io = *platform;
     return thermo_iot_power_init(&app->energy, power_config);
 }
