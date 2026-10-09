@@ -77,3 +77,7 @@ Po wyrównaniu 13 symboli (w tym 16 pinów LTC3108) i końców przewodów do sia
 Ta walidacja **zamyka problem kompilowalności obrazu RF** dla konkretnego targetu. **Nie zamyka** wymogu pełnego firmware czujnikowego: brak kodu kalibracji prawdziwego czujnika temperatury rury, ADC pomiaru superkondensatora i PMIC, włączenia modelu zarządzania energią do docelowego schedulera LoRaWAN, zapisu kluczy OTAA/NVM i automatycznego STOP2. Nie wolno przedstawiać tego obrazu jako zatwierdzonego firmware produkcyjnego ani jako fizycznego MVP.
 
 **Prawa oryginalnych części Thermo-IoT:** © 2026 Mojeaterego — Andrzej Mikulski. Wszelkie prawa zastrzeżone. Prawa do źródeł Seeed, STM32CubeWL i zależności pozostają przy ich autorach.
+
+## Bramki odbioru fizycznego MVP — integralność dowodów bez publikacji IP
+
+`thermo_iot.mvp_acceptance` weryfikuje offline SHA-256 siedmiu wymaganych artefaktów oraz ich podstawowy kontrakt: pomiary oznaczone przez operatora, PMIC cold-start, dopasowanie niezależnego uplinku do świeżej próby, zero naruszeń DRC aktywnej płytki, dokument flash, co najmniej siedem dni śladu energetycznego. Uruchamia się na prywatnych plikach użytkownika. Odczyty oznaczone `measured` i dopasowany JSON TTN nie stanowią niezależnego poświadczenia autentyczności. Wynik zawsze podaje `physically_validated=false` oraz wymaga podpisu odpowiedzialnego inżyniera po realnym badaniu urządzenia. Przed kolejnym ujawnieniem potencjalnie nowego elementu technicznego obowiązuje [kontrola IP](IP_PROTECTION_PL.md).
