@@ -46,6 +46,18 @@ jobs:
           # Audit reports do not constitute release approval: all CAD defects
           # must be reviewed and corrected before fabrication.
           exit 0
+      - name: Validate KiCad XML pin-to-net contracts
+        run: |
+          kicad-cli sch export netlist --format kicadxml \
+            -o cad-reports/thermo_bench_carrier.xml \
+            hardware/kicad/thermo_bench_carrier.kicad_sch
+          python3 hardware/verify_kicad_netlist.py --kind carrier \
+            --xml cad-reports/thermo_bench_carrier.xml
+          kicad-cli sch export netlist --format kicadxml \
+            -o cad-reports/ltc3108_power_breakout.xml \
+            hardware/active_power/ltc3108_power_breakout.kicad_sch
+          python3 hardware/verify_kicad_netlist.py --kind ltc3108 \
+            --xml cad-reports/ltc3108_power_breakout.xml
       - name: Prepare preliminary passive-carrier plots (NOT FOR FAB)
         run: |
           set -euo pipefail
