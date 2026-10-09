@@ -8,7 +8,7 @@ This repository is a laboratory reference implementation for a district-heating 
 - The SQLite database is a local prototype; protect filesystem access, backups and retention. Session identifiers are not credentials but may still be operationally sensitive.
 - Temperature anomaly candidates are statistical suggestions only; **do not use them to actuate heating infrastructure, override existing safety systems or claim certified leak detection**.
 - Work at physical district-heating assets requires operator approval, lockout and site-specific safety procedures.
-- Do not commit private applicant identities, unpublished patent claims, device keys, personally identifiable information, or real network endpoints.
+- The project owner's business contact details explicitly published in README/LICENSE are authorized for publication; do not disclose additional private personal data, unpublished patent claims, device keys, or real network endpoints.
 - Report security problems through the GitHub repository owner's established private communication channel rather than publishing exploitable details in issues.
 
 No security certification, penetration test, IEC 62443 conformity or production readiness is claimed.

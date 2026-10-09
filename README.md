@@ -1,5 +1,7 @@
 # FENG-LABORATORY — Thermo-IoT
 
+**Prawa autorskie i kontakt:** © 2026 **Mojeaterego — Andrzej Mikulski**. **Wszelkie prawa zastrzeżone / All rights reserved.** E-mail: **mojealterego21@gmail.com** · tel. **+48 455 575 337**. Szczegóły: [LICENSE](LICENSE).
+
 Repozytorium rozwojowe projektu **Thermo-IoT** w kontekście FENG 2.27 „Laboratorium Innowatora”.
 
 **Stan na 9 października 2026:** zweryfikowany kod referencyjny, testy i dokumentacja koncepcyjna. **Brak potwierdzonego prototypu, eksperymentów metrologicznych i poziomu TRL.** Ani dostęp do programu, ani dofinansowanie nie są zagwarantowane.

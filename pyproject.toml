@@ -5,7 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "thermo-iot-laboratory"
 version = "0.1.0"
-description = "Energy budget screening toolkit for Thermo-IoT concept"
+description = "Proprietary Thermo-IoT laboratory prototype: energy, telemetry, PCB and STM32 Wio-E5 integration"
+authors = [{ name = "Andrzej Mikulski", email = "mojealterego21@gmail.com" }]
+license = "LicenseRef-Proprietary"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 
 [tool.setuptools.packages.find]

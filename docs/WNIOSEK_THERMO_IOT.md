@@ -1,5 +1,7 @@
 # Thermo-IoT — karta innowacyjnego pomysłu biznesowego (IPB)
 
+**Wnioskodawca / autor:** Andrzej Mikulski — Mojeaterego. **E-mail:** mojealterego21@gmail.com. **Telefon:** +48 455 575 337. **© 2026 Mojeaterego — Andrzej Mikulski. Wszelkie prawa zastrzeżone.**
+
 **Program:** FENG 2.27 Laboratorium Innowatora. **Operator roboczy:** Garage Genius / INVESTIN. **Stan:** 9 października 2026. **Dokument roboczy:** nie jest oficjalnym formularzem.
 
 ## Streszczenie

@@ -1,6 +1,6 @@
 (kicad_sch (version 20231120) (generator "thermo_iot")
 (uuid "ac72b401-36cd-48b4-8655-000000000001") (paper "A3")
-(title_block (title "Thermo-IoT LTC3108 GN16 power harvester LAB prototype") (rev "A0") (date "2026-10-09"))
+(title_block (title "Thermo-IoT LTC3108 GN16 power harvester LAB prototype") (rev "A0") (date "2026-10-09") (comment 1 "Copyright (c) 2026 Mojeaterego - Andrzej Mikulski. All rights reserved.") (comment 2 "mojealterego21@gmail.com | +48 455 575 337"))
 (lib_symbols (symbol "ThermoActive:LTC3108_GN16" (pin_names (offset 0.762)) (in_bom yes) (on_board yes)
 (property "Reference" "U" (at 0 20 0) (effects (font (size 1.27 1.27))))
 (property "Value" "LTC3108EGN" (at 0 -20 0) (effects (font (size 1.27 1.27))))

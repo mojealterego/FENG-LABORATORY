@@ -1,6 +1,6 @@
 (kicad_sch (version 20231120) (generator "thermo_iot_generator")
  (uuid "ed2f0379-14fa-4acf-8fb1-000000000001") (paper "A4")
- (title_block (title "Thermo-IoT Passive Bench Carrier") (date "2026-10-09") (rev "A0") (company "FENG-LABORATORY"))
+ (title_block (title "Thermo-IoT Passive Bench Carrier") (date "2026-10-09") (rev "A0") (company "FENG-LABORATORY") (comment 1 "Copyright (c) 2026 Mojeaterego - Andrzej Mikulski. All rights reserved.") (comment 2 "mojealterego21@gmail.com | +48 455 575 337"))
  (lib_symbols
  (symbol "ThermoBench:BenchConn_01x02" (pin_names (offset 0) hide) (in_bom yes) (on_board yes)
  (property "Reference" "J" (at 0 6.54 0) (effects (font (size 1.27 1.27))))
