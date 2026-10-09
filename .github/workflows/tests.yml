@@ -21,6 +21,12 @@ jobs:
             -Ifirmware/include firmware/src/thermo_iot_frame.c \
             firmware/tests/test_frame.c -o /tmp/thermo_iot_frame_tests
           /tmp/thermo_iot_frame_tests
+      - name: C11 STM32WLE5 application host tests
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror -pedantic -Ifirmware/include \
+            firmware/src/thermo_iot_app.c firmware/src/thermo_iot_power_policy.c \
+            firmware/src/thermo_iot_frame.c firmware/tests/test_app.c -o /tmp/thermo_iot_app_tests
+          /tmp/thermo_iot_app_tests
       - name: C11 power-management policy host tests
         run: |
           cc -std=c11 -Wall -Wextra -Werror -pedantic \
