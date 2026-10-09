@@ -4,6 +4,8 @@
 
 **Program:** FENG 2.27 Laboratorium Innowatora. **Operator roboczy:** Garage Genius / INVESTIN. **Stan:** 9 października 2026. **Dokument roboczy:** nie jest oficjalnym formularzem.
 
+**Kontrola IP przed złożeniem:** wniosek roboczy jest już w publicznym GitHub. Szczegóły mogące ujawniać nowy wynalazek należy przygotować odrębnie, pod ochroną poufności, i przed przekazaniem operatorowi ocenić z rzecznikiem patentowym oraz w warunkach naboru. Sam zapis „wszelkie prawa zastrzeżone” nie zabezpiecza nowości patentowej. [Procedura](IP_PROTECTION_PL.md).
+
 ## Streszczenie
 
 Thermo-IoT jest propozycją bezbateryjnego węzła pomiarowego do wybranych, dostępnych fragmentów infrastruktury ciepłowniczej. Energia ma pochodzić z generatora termoelektrycznego (TEG/cTEG) wykorzystującego gradient pomiędzy rurą a otoczeniem, być kondycjonowana przez PMIC i buforowana w superkondensatorze. Układ budziłby się okresowo, mierzył temperaturę i stan zasilania, a następnie wysyłał pakiet przez LoRaWAN Class A. Dane trafiałyby do platformy diagnostycznej służącej do oceny tendencji, braków danych i alertów. Docelowy model komercjalizacji: Sensing-as-a-Service B2B.

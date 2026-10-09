@@ -1,5 +1,7 @@
 # FENG-LABORATORY — Thermo-IoT
 
+**OCHRONA WYNALAZKU:** Repozytorium jest **publiczne**, a wcześniejsze commity mogą stanowić ujawnienie stanu techniki. Copyright ani dopisek „All rights reserved” **nie zastępuje zgłoszenia patentowego**. Nie publikować nowych unikatowych rozwiązań konstrukcyjnych przed przeglądem przez rzecznika patentowego. [Procedura IP](docs/IP_PROTECTION_PL.md) · [Rejestr dat publicznych ujawnień](docs/IP_PUBLIC_DISCLOSURE_REGISTER.md).
+
 **Prawa autorskie i kontakt:** © 2026 **Mojeaterego — Andrzej Mikulski**. **Wszelkie prawa zastrzeżone / All rights reserved.** E-mail: **mojealterego21@gmail.com** · tel. **+48 455 575 337**. Szczegóły: [LICENSE](LICENSE).
 
 Repozytorium rozwojowe projektu **Thermo-IoT** w kontekście FENG 2.27 „Laboratorium Innowatora”.

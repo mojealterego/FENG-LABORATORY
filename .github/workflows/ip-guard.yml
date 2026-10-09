@@ -1,0 +1,26 @@
+name: IP disclosure hygiene (post-publication)
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Inspect public HEAD for known protected paths/markers
+        run: python -m tools.ip_guard --tracked
+      - name: Validate disclosure protection regression tests
+        run: python -m unittest discover -s tests -p test_ip_guard.py -v
+      - name: Warn on legal effect of public repository
+        if: always()
+        run: |
+          {
+            echo "This workflow runs AFTER upload to GitHub; it cannot preserve novelty."
+            echo "Local pre-commit/pre-push hooks require setup on the contributor's computer."
+            echo "No tool can replace a confidential invention review with a patent attorney."
+          } >> "$GITHUB_STEP_SUMMARY"

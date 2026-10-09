@@ -4,3 +4,38 @@ __pycache__/
 .venv/
 *.egg-info/
 *.log
+
+# Local private technical know-how / invention records (never public Git)
+private/
+confidential/
+internal/
+unfiled/
+patent_drafts/
+invention_records/
+trade_secrets/
+unpublished/
+private_evidence/
+evidence/private/
+data/raw_measurements/
+
+# Real lab and vendor credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.key
+*.kdbx
+se-identity.h
+*ttn-actual-uplink.json
+*lorawan_keys.json
+
+# Local builds / physical raw evidence
+local-build/
+*.elf
+*.hex
+*.map
+*.sqlite
+*.sqlite3
+*.db

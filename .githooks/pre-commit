@@ -1,0 +1,5 @@
+#!/bin/sh
+# Pre-publication IP gate; activated by: git config core.hooksPath .githooks
+set -eu
+cd "$(git rev-parse --show-toplevel)"
+exec python3 -m tools.ip_guard --staged
