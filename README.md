@@ -41,6 +41,11 @@ cc -std=c11 -Wall -Wextra -Werror -pedantic -Ifirmware/include firmware/src/ther
 - [Protokół telemetrii / TTN](docs/PROTOKOL_IOT.md)
 - [Zasady oceny analityki](docs/ANALITYKA.md)
 - [Protokół metrologii TEG i analizy CSV](docs/METROLOGIA_TEG.md)
+- [Analiza konkurencji i wcześniejszego stanu techniki](docs/PRIOR_ART_I_WYROZNIK.md)
+- [Lista kontrolna gotowości zgłoszenia](docs/GOTOWOSC_ZGLOSZENIA.md)
+- [Harmonogram 12 tygodni](docs/HARMONOGRAM_12_TYGODNI.md)
+- [BOM funkcjonalny i wymagania techniczne](docs/BOM_I_WYMAGANIA_TECHNICZNE.md)
+- [Granice bezpieczeństwa IT/OT](SECURITY.md)
 
 ## Warunki przed zgłoszeniem
 
