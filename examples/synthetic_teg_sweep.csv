@@ -1,0 +1,7 @@
+run_id,measurement_utc,hot_c,cold_c,voltage_mv,current_ma,evidence_type
+run-a,2026-10-09T10:00:00Z,65,25,10,0.4,synthetic
+run-a,2026-10-09T10:00:01Z,65,25,12,0.6,synthetic
+run-a,2026-10-09T10:00:02Z,65,25,8,0.7,synthetic
+run-b,2026-10-09T10:01:00Z,65,25,10,0.4,synthetic
+run-b,2026-10-09T10:01:01Z,65,25,12,0.5,synthetic
+run-b,2026-10-09T10:01:02Z,65,25,8,0.7,synthetic
