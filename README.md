@@ -45,6 +45,9 @@ cc -std=c11 -Wall -Wextra -Werror -pedantic -Ifirmware/include firmware/src/ther
 - [Lista kontrolna gotowości zgłoszenia](docs/GOTOWOSC_ZGLOSZENIA.md)
 - [Harmonogram 12 tygodni](docs/HARMONOGRAM_12_TYGODNI.md)
 - [BOM funkcjonalny i wymagania techniczne](docs/BOM_I_WYMAGANIA_TECHNICZNE.md)
+- [Przegląd kandydatów PMIC/MCU/sensora i ryzyk rozruchu](docs/HARDWARE_PRELIMINARY.md)
+- [Energia z profilu czasowego generatora](docs/TRACE_SIMULATION.md)
+- [Firmware: histereza i bramka mocy](docs/FIRMWARE_POWER_POLICY.md)
 - [Granice bezpieczeństwa IT/OT](SECURITY.md)
 
 ## Warunki przed zgłoszeniem
