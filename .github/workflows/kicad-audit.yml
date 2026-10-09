@@ -80,6 +80,14 @@ jobs:
           test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.gbl' -print -quit)"
           test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.gm1' -print -quit)"
           test -n "$(find cad-reports/passive-plots -maxdepth 1 -name '*.drl' -print -quit)"
+      - name: Classify active and passive PCB (manufacturing HOLD by default)
+        run: |
+          python3 hardware/cad_gate.py \
+            --drc cad-reports/ltc3108_power_breakout-drc.txt \
+            | tee cad-reports/ltc3108-power-readiness.json
+          python3 hardware/cad_gate.py \
+            --drc cad-reports/thermo_bench_carrier-drc.txt \
+            | tee cad-reports/passive-carrier-readiness.json
       - name: Surface CAD readiness in GitHub job summary
         if: always()
         shell: bash
@@ -94,6 +102,15 @@ jobs:
               fi
             done
             echo ""
+            echo "Readiness decisions (not fabrication approvals):"
+            for file in cad-reports/*-readiness.json; do
+              if [ -f "$file" ]; then
+                echo "### $(basename "$file")"
+                echo '\`\`\`json'
+                cat "$file"
+                echo '\`\`\`'
+              fi
+            done
             echo "KiCad error/warning status and unconnected items are retained in the artifact."
             echo "A green diagnostic job does not waive ERC/DRC violations or authorize manufacturing."
           } >> "$GITHUB_STEP_SUMMARY"
